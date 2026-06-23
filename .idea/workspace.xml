@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="704481fc-d141-4245-9a61-41f287021c26" name="Changes" comment="" />
+    <list default="true" id="704481fc-d141-4245-9a61-41f287021c26" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.name" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.name" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -22,6 +25,7 @@
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Python.EDA before preprocessing.executor&quot;: &quot;Run&quot;,
     &quot;Python.EDA.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
@@ -51,6 +55,8 @@
       <workItem from="1782133953846" duration="8000" />
       <workItem from="1782134064595" duration="1509000" />
       <workItem from="1782151438291" duration="562000" />
+      <workItem from="1782152651261" duration="321000" />
+      <workItem from="1782210971857" duration="438000" />
     </task>
     <servers />
   </component>
@@ -70,6 +76,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Employee_Satisfaction_Engagement_Analysis$EDA.coverage" NAME="EDA Coverage Results" MODIFIED="1782135714990" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/notebook" />
+    <SUITE FILE_PATH="coverage/EDA_before_preprocessing_py$EDA_before_preprocessing.coverage" NAME="EDA before preprocessing Coverage Results" MODIFIED="1782211022323" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/notebook" />
     <SUITE FILE_PATH="coverage/EDA_py$EDA.coverage" NAME="EDA Coverage Results" MODIFIED="1782151744137" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/notebook" />
   </component>
 </project>
