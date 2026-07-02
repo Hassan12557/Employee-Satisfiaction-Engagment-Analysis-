@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
 # 1. Load the dataset
 csv_filename = "D:\Data Science Projects\Employee-Satisfaction-Engagement-Analysis\Data\IBM-HR.csv"
@@ -37,10 +38,10 @@ columns_to_drop_raw = [
     "MonthlyRate",
     "JobLevel",
     "YearsInCurrentRole",
-    "YearsWithCurrManager"
+    "YearsWithCurrManager",
+
 ]
 
-# Match exact column names from the CSV file using our lookup dictionary
 actual_drops = [
     csv_column_lookup[col.lower()]
     for col in columns_to_drop_raw
@@ -65,7 +66,6 @@ categorical_to_encode_raw = [
     "OverTime",
 ]
 
-# Map to actual column names in the dataset
 actual_categorical = [
     csv_column_lookup[col.lower().replace(" ", "")]
     for col in categorical_to_encode_raw
@@ -73,7 +73,6 @@ actual_categorical = [
 ]
 
 print(f"\nApplying One-Hot Encoding to: {actual_categorical}")
-# dtype=int converts the resulting True/False boolean flags into clean 1s and 0s
 df_encoded = pd.get_dummies(
     df_cleaned, columns=actual_categorical, dtype=int, drop_first=False
 )
@@ -98,22 +97,49 @@ print("\n--- Data Split Summary ---")
 print(f"Training Features Shape (X_train): {X_train.shape}")
 print(f"Testing Features Shape (X_test):   {X_test.shape}")
 
-# 7. Correlation Analysis (TRAINING SET ONLY)
-print("\nGenerating Correlation Matrix for the Training Set...")
+# 7. Apply Standard Scaling (TRAINING SET BOUNDARY)
+features_to_scale_raw = [
+    "Age",
+    "DistanceFromHome",
+    "MonthlyIncome",
+    "NumCompaniesWorked",
+    "PercentSalaryHike",
+    "YearsAtCompany",
+    "YearsSinceLastPromotion",
+]
 
-# Recombine training features with training labels to view direct correlations
+# Map to the exact column names present inside the split DataFrames
+encoded_column_lookup = {col.lower().replace(" ", ""): col for col in X_train.columns}
+actual_scale_features = [
+    encoded_column_lookup[col.lower().replace(" ", "")]
+    for col in features_to_scale_raw
+    if col.lower().replace(" ", "") in encoded_column_lookup
+]
+
+print(f"\nApplying Standard Scaling to: {actual_scale_features}")
+scaler = StandardScaler()
+
+# Fit and transform strictly on the training set features
+X_train[actual_scale_features] = scaler.fit_transform(
+    X_train[actual_scale_features]
+)
+
+# Transform the test set features using the training set parameters (No leaking!)
+X_test[actual_scale_features] = scaler.transform(X_test[actual_scale_features])
+print("Standard scaling applied successfully to partitions.")
+
+# 8. Correlation Analysis (FULLY PROCESSED TRAINING SET ONLY)
+print("\nGenerating Correlation Matrix for the Scaled Training Set...")
+
 X_train_numeric = X_train.copy()
 X_train_numeric["Attrition"] = y_train
 
-# Compute correlation matrix
 corr_matrix = X_train_numeric.corr()
-
-# Isolate the correlation of all features specifically against Attrition
 attrition_corr = corr_matrix[["Attrition"]].sort_values(
     by="Attrition", ascending=False
 )
 
-# Plot an optimized heatmap targeting Attrition relationships
+# Plot the target vertical heatmap
 plt.figure(figsize=(6, 15))
 sns.heatmap(
     attrition_corr,
@@ -127,7 +153,7 @@ sns.heatmap(
 )
 
 plt.title(
-    "Features vs Attrition Churn Correlation\n(Training Set Only)",
+    "Scaled Features vs Attrition Churn Correlation\n(Training Set Only)",
     fontsize=12,
     fontweight="bold",
     pad=15,
@@ -135,4 +161,4 @@ plt.title(
 plt.tight_layout()
 plt.show()
 
-print("Pipeline executed successfully! Heatmap window displayed.")
+print("Pipeline executed successfully! Cleaned, encoded, and scaled data matrices are ready.")
