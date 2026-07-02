@@ -1,4 +1,4 @@
-import os
+#import os
 import pandas as pd
 from sklearn.model_selection import train_test_split
 import seaborn as sns
@@ -24,7 +24,10 @@ columns_to_drop = [
     "EmployeeNumber",  # Redundant/Useless random ID
     "DailyRate",  # Synthetic uniform noise
     "HourlyRate",  # Synthetic uniform noise
-    "MonthlyRate",  # Synthetic uniform noise
+    "MonthlyRate",# Synthetic uniform noise
+    "YearsWithCurrentRole",
+    "YearsWithCurrManager",
+    "TotalWorkingYears"
 ]
 
 # Using errors='ignore' ensures the script won't crash if a column was already dropped
