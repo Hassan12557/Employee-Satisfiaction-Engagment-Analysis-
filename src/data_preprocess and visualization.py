@@ -1,6 +1,8 @@
 import os
 import pandas as pd
 from sklearn.model_selection import train_test_split
+import seaborn as sns
+import matplotlib.pyplot as plt
 # 1. Load your completely raw dataset
 # (Replace 'your_raw_file.csv' with your actual file name)
 csv_filename = "D:\Data Science Projects\Employee-Satisfaction-Engagement-Analysis\Data\IBM-HR.csv"
@@ -60,3 +62,46 @@ print(f"Testing Labels Shape (y_test):     {y_test.shape}")
 print(f"\nClass balance in Training Set:\n{y_train.value_counts(normalize=True)}")
 print(f"Class balance in Testing Set:\n{y_test.value_counts(normalize=True)}")
 print("\nData preprocessing and train-test split completed successfully!")
+
+# --- PHASE 6: CORRELATION ANALYSIS ON TRAINING SET ONLY ---
+print("\nGenerating Correlation Matrix for the Training Set...")
+
+# 1. Select only numerical features from the training set
+X_train_numeric = X_train.select_dtypes(include=["number"]).copy()
+
+# 2. Recombine numerical features with the training target (y_train)
+# This lets you see exactly how each feature correlates with Attrition (0 or 1)
+X_train_numeric["Attrition"] = y_train
+
+# 3. Compute the Pearson correlation matrix
+corr_matrix = X_train_numeric.corr()
+
+# 4. Generate the Heatmap Plot Window
+plt.figure(figsize=(14, 11))
+
+# We use a diverging color map (coolwarm) to easily spot high positive/negative correlations
+sns.heatmap(
+    corr_matrix,
+    annot=True,  # Displays exact correlation coefficients in the squares
+    fmt=".2f",  # Rounds to 2 decimal places
+    cmap="coolwarm",
+    linewidths=0.5,
+    vmin=-1,  # Minimum correlation value limit
+    vmax=1,  # Maximum correlation value limit
+    annot_kws={"size": 8},  # Scale down text inside squares for neatness
+)
+
+# Customize title and alignment configurations
+plt.title(
+    "Training Set Correlation Matrix (Features vs Attrition)",
+    fontsize=16,
+    fontweight="bold",
+    pad=20,
+)
+plt.xticks(rotation=45, ha="right", fontsize=10)
+plt.yticks(fontsize=10)
+plt.tight_layout()
+
+# Display the individual correlation window
+plt.show()
+print("Correlation matrix displayed successfully!")
