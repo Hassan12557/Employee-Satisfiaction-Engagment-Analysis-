@@ -91,6 +91,13 @@ def get_clustering_data(filepath):
     
     return X_final
 
+def get_classification_data(filepath):
+    """
+    Step 4: Option C Pipeline (Tree-Based Classification)
+    Reuses the structured split for a clean baseline model comparison.
+    """
+    # Reusing our verified 37-feature split for perfect model-to-model benchmarking
+    return get_regression_data(filepath)
 
 # The block below only executes when you run data_preprocess.py directly.
 # When imported into other files, Python completely ignores this block.
