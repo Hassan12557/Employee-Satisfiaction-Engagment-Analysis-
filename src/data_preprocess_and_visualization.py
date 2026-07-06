@@ -61,6 +61,37 @@ def get_regression_data(filepath):
     return X_train_final, X_test_final, y_train, y_test
 
 
+def get_clustering_data(filepath):
+    """
+    Step 3: Option B Pipeline (Unsupervised Clustering)
+    Prepares features for geometric distance calculation. Drops target vectors entirely.
+    """
+    # 1. Base clean
+    df_clean = load_and_drop_base(filepath)
+    
+    # 2. Drop the target column entirely (Unsupervised models don't use labels)
+    X_clust = df_clean.drop(columns=['Attrition'], errors='ignore')
+    
+    # 3. Categorical Encoding
+    categorical_cols = X_clust.select_dtypes(include=['object', 'str']).columns
+    X_encoded = pd.get_dummies(X_clust, columns=categorical_cols, drop_first=True)
+    
+    # 4. Drop severe collinearity to prevent distance distortion
+    collinear_drops = ['JobLevel', 'TotalWorkingYears', 'YearsInCurrentRole', 'YearsWithCurrManager']
+    X_final = X_encoded.drop(columns=collinear_drops, errors='ignore')
+    
+    # 5. Feature Scaling (Absolutely mandatory for K-Means distance math!)
+    columns_to_scale = [
+        'Age', 'DistanceFromHome', 'MonthlyIncome', 'NumCompaniesWorked', 
+        'PercentSalaryHike', 'YearsAtCompany', 'YearsSinceLastPromotion'
+    ]
+    
+    scaler = StandardScaler()
+    X_final[columns_to_scale] = scaler.fit_transform(X_final[columns_to_scale])
+    
+    return X_final
+
+
 # The block below only executes when you run data_preprocess.py directly.
 # When imported into other files, Python completely ignores this block.
 if __name__ == "__main__":
