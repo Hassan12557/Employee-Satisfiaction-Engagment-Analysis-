@@ -10,6 +10,13 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -25,8 +32,16 @@
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Python.Cluster.executor&quot;: &quot;Run&quot;,
     &quot;Python.EDA before preprocessing.executor&quot;: &quot;Run&quot;,
     &quot;Python.EDA.executor&quot;: &quot;Run&quot;,
+    &quot;Python.cluster_profile.executor&quot;: &quot;Run&quot;,
+    &quot;Python.data_preprocess and visualization.executor&quot;: &quot;Run&quot;,
+    &quot;Python.data_preprocess.executor&quot;: &quot;Run&quot;,
+    &quot;Python.data_preprocess_and_visualization.executor&quot;: &quot;Run&quot;,
+    &quot;Python.model.executor&quot;: &quot;Run&quot;,
+    &quot;Python.train_random_forest.executor&quot;: &quot;Run&quot;,
+    &quot;Python.train_satisfaction_regressor.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
@@ -56,7 +71,27 @@
       <workItem from="1782134064595" duration="1509000" />
       <workItem from="1782151438291" duration="562000" />
       <workItem from="1782152651261" duration="321000" />
-      <workItem from="1782210971857" duration="438000" />
+      <workItem from="1782210971857" duration="513000" />
+      <workItem from="1782212489647" duration="2009000" />
+      <workItem from="1782217161397" duration="127000" />
+      <workItem from="1782217691299" duration="798000" />
+      <workItem from="1782218543014" duration="1267000" />
+      <workItem from="1782817686575" duration="5334000" />
+      <workItem from="1782885097114" duration="4457000" />
+      <workItem from="1782978896613" duration="165000" />
+      <workItem from="1782979276177" duration="184000" />
+      <workItem from="1782979730712" duration="413000" />
+      <workItem from="1782982820468" duration="564000" />
+      <workItem from="1782991746562" duration="1298000" />
+      <workItem from="1782993380219" duration="601000" />
+      <workItem from="1782996656436" duration="692000" />
+      <workItem from="1782998681424" duration="320000" />
+      <workItem from="1783327183372" duration="242000" />
+      <workItem from="1783328528377" duration="1383000" />
+      <workItem from="1783331424318" duration="220000" />
+      <workItem from="1783337346244" duration="2936000" />
+      <workItem from="1783414797251" duration="238000" />
+      <workItem from="1783415231544" duration="1682000" />
     </task>
     <servers />
   </component>
@@ -76,7 +111,15 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Employee_Satisfaction_Engagement_Analysis$EDA.coverage" NAME="EDA Coverage Results" MODIFIED="1782135714990" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/notebook" />
-    <SUITE FILE_PATH="coverage/EDA_before_preprocessing_py$EDA_before_preprocessing.coverage" NAME="EDA before preprocessing Coverage Results" MODIFIED="1782211022323" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/notebook" />
+    <SUITE FILE_PATH="coverage/data_preprocess_py$data_preprocess.coverage" NAME="data_preprocess Coverage Results" MODIFIED="1782980021959" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+    <SUITE FILE_PATH="coverage/model_py$model.coverage" NAME="model Coverage Results" MODIFIED="1783331468644" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+    <SUITE FILE_PATH="coverage/data_preprocess_and_visualization_py$cluster_profile.coverage" NAME="cluster_profile Coverage Results" MODIFIED="1783339250593" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+    <SUITE FILE_PATH="coverage/data_preprocess_and_visualization_py$Cluster.coverage" NAME="Cluster Coverage Results" MODIFIED="1783339123219" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+    <SUITE FILE_PATH="coverage/EDA_before_preprocessing_py$EDA_before_preprocessing.coverage" NAME="EDA before preprocessing Coverage Results" MODIFIED="1782885105004" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/notebook" />
+    <SUITE FILE_PATH="coverage/data_preprocess_and_visualization_py$train_random_forest.coverage" NAME="train_random_forest Coverage Results" MODIFIED="1783339985829" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+    <SUITE FILE_PATH="coverage/data_preprocess_and_visualization_py$model.coverage" NAME="model Coverage Results" MODIFIED="1783329684682" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
     <SUITE FILE_PATH="coverage/EDA_py$EDA.coverage" NAME="EDA Coverage Results" MODIFIED="1782151744137" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/notebook" />
+    <SUITE FILE_PATH="coverage/train_satisfaction_regressor_py$train_satisfaction_regressor.coverage" NAME="train_satisfaction_regressor Coverage Results" MODIFIED="1783415635644" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+    <SUITE FILE_PATH="coverage/data_preprocess_and_visualization_py$data_preprocess_and_visualization.coverage" NAME="data_preprocess_and_visualization Coverage Results" MODIFIED="1783339916125" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
   </component>
 </project>
