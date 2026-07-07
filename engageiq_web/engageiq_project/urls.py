@@ -15,8 +15,9 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', admin.site.get_urls()), # Django admin portal control panel
+    path('', include('core_app.urls')),    # Maps EngageIQ root paths cleanly 🚀
 ]
