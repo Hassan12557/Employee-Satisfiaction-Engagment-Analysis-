@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EngageIQ // Predictive HR Intelligence Platform</title>
+    <link rel="stylesheet" href="{% static 'core_app/css/style.css' %}">
+</head>
+<body>
+
+    <nav class="nav-container">
+        <a href="{% url 'landing' %}" class="brand-logo">Engage<span>IQ</span></a>
+        <ul class="nav-links">
+            <li><a href="{% if request.resolver_match.url_name == 'landing' %}#features{% else %}{% url 'landing' %}#features{% endif %}">Features</a></li>
+            <li><a href="{% if request.resolver_match.url_name == 'landing' %}#analytics{% else %}{% url 'landing' %}#analytics{% endif %}">Analytics</a></li>
+            <li><a href="#">Pricing</a></li>
+            <li><a href="#">Enterprise</a></li>
+        </ul>
+        <div>
+            {% if user.is_authenticated %}
+                <a href="{% url 'dashboard' %}" class="btn-secondary" style="margin-right: 0.5rem;">Dashboard</a>
+                <a href="{% url 'logout' %}" class="btn-primary">Log Out</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn-secondary" style="margin-right: 0.5rem;">Log In</a>
+                <a href="{% url 'register' %}" class="btn-primary">Get Started</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    {% block content %}
+    {% endblock %}
+
+</body>
+</html>

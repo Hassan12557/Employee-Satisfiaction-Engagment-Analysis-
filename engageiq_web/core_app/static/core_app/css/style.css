@@ -1,0 +1,382 @@
+/* ==========================================================================
+   EngageIQ Premium Tech Design System Engine
+   ========================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    --bg-dark: #090d16;
+    --bg-card: rgba(17, 24, 39, 0.55);
+    --border-glass: rgba(255, 255, 255, 0.07);
+    --accent-orange: #ff6b00;
+    --accent-orange-glow: rgba(255, 107, 0, 0.35);
+    --text-primary: #ffffff;
+    --text-secondary: #94a3b8;
+    --font-main: 'Plus Jakarta Sans', sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-dark);
+    /* Apple/SaaS Premium Dark Matrix Grid Overlay */
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 50px 50px;
+    background-position: center top;
+    font-family: var(--font-main);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    line-height: 1.5;
+}
+
+/* --- Global Layout Containers --- */
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 5%;
+    border-bottom: 1px solid var(--border-glass);
+    backdrop-filter: blur(12px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(9, 13, 22, 0.7);
+}
+
+.brand-logo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.05em;
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
+.brand-logo span {
+    color: var(--accent-orange);
+}
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+}
+
+.nav-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: color 0.25s ease;
+}
+
+.nav-links a:hover {
+    color: var(--text-primary);
+}
+
+/* --- Premium Typography & Utility Components --- */
+.btn-primary {
+    background: var(--accent-orange);
+    color: #ffffff;
+    padding: 0.75rem 1.7rem;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 20px var(--accent-orange-glow);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(255, 107, 0, 0.5);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    padding: 0.75rem 1.7rem;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid var(--border-glass);
+    transition: background 0.25s ease;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.glass-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--border-glass);
+    border-radius: 16px;
+    padding: 2.5rem;
+}
+
+/* --- Landing View Layer --- */
+.hero-section {
+    text-align: center;
+    padding: 8rem 1rem 5rem 1rem;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.hero-title {
+    font-size: 4rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    margin-bottom: 2.5rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.hero-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 4rem;
+}
+
+.email-cta-box {
+    display: flex;
+    max-width: 500px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-glass);
+    padding: 0.4rem;
+    border-radius: 12px;
+}
+
+.email-cta-box input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 0 1rem;
+    color: white;
+    font-family: inherit;
+    outline: none;
+}
+
+/* --- Responsive Layout Cards Matrix --- */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    padding: 5rem 5%;
+}
+
+.feature-card h3 {
+    margin-bottom: 0.75rem;
+    font-size: 1.3rem;
+}
+
+.feature-card p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+}
+
+/* --- Authentication Card Systems --- */
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 6rem 1rem;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 440px;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-header h2 { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;}
+
+.auth-group {
+    margin-bottom: 1.25rem;
+}
+
+.auth-group label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.auth-input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-glass);
+    padding: 0.85rem 1rem;
+    border-radius: 8px;
+    color: white;
+    font-family: inherit;
+    transition: border-color 0.25s;
+}
+
+.auth-input:focus {
+    border-color: var(--accent-orange);
+    outline: none;
+}
+
+.auth-footer-link {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.auth-footer-link a { color: var(--accent-orange); text-decoration: none; font-weight: 600;}
+
+/* --- Interactive Sliders Dashboard --- */
+.dashboard-layout {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 3rem;
+    padding: 3rem 5%;
+}
+
+.slider-row {
+    margin-bottom: 2rem;
+}
+
+.slider-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+}
+
+.slider-header span { font-weight: 600; font-size: 0.95rem; }
+.slider-value { color: var(--accent-orange); font-variant-numeric: tabular-nums; }
+
+/* Apple-Inspired High-Contrast Horizontal Range Sliders Customization */
+.engageiq-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 99px;
+    background: rgba(255, 255, 255, 0.1);
+    outline: none;
+}
+
+.engageiq-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 2px solid var(--accent-orange);
+    cursor: pointer;
+    box-shadow: 0 0 10px var(--accent-orange-glow);
+    transition: transform 0.1s;
+}
+
+.engageiq-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+/* HUD Displays Calculation Module */
+.hud-score-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    border-color: rgba(255, 107, 0, 0.25);
+    background: linear-gradient(135deg, rgba(255,107,0,0.03) 0%, rgba(9,13,22,0.6) 100%);
+}
+
+.hud-big-number {
+    font-size: 5.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1;
+    margin: 1rem 0;
+    letter-spacing: -0.04em;
+    text-shadow: 0 0 40px rgba(255, 107, 0, 0.2);
+}
+
+/* --- Audit Log Datatable Modules --- */
+.history-section { padding: 2rem 5% 6rem 5%; }
+.history-section h2 { margin-bottom: 1.5rem; font-size: 1.8rem; letter-spacing: -0.02em;}
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--border-glass);
+    border-radius: 12px;
+    background: var(--bg-card);
+}
+
+.analytics-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.95rem;
+}
+
+.analytics-table th, .analytics-table td { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-glass); }
+.analytics-table th { background: rgba(0, 0, 0, 0.2); color: var(--text-secondary); font-weight: 600; }
+.analytics-table tr:last-child td { border-bottom: none; }
+.badge-score { background: rgba(255,107,0,0.15); color: var(--accent-orange); padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: 700; }
+
+/* --- Interrupting Verification Modal Window --- */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(4, 7, 13, 0.85);
+    backdrop-filter: blur(12px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-box {
+    max-width: 460px;
+    width: 90%;
+    text-align: center;
+}
+
+.modal-icon {
+    width: 64px; height: 64px;
+    background: rgba(255, 107, 0, 0.1);
+    border: 1px solid var(--accent-orange);
+    color: var(--accent-orange);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.75rem; margin: 0 auto 1.5rem auto;
+}
+
+/* --- Media Queries For Total Responsiveness --- */
+@media (max-width: 968px) {
+    .dashboard-layout { grid-template-columns: 1fr; }
+    .hero-title { font-size: 2.75rem; }
+}
+@media (max-width: 640px) {
+    .nav-links { display: none; }
+    .hero-actions { flex-direction: column; }
+    .email-cta-box { flex-direction: column; gap: 0.5rem; background: transparent; border: none; padding: 0; }
+    .email-cta-box input { background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); padding: 0.85rem; border-radius: 8px; }
+}

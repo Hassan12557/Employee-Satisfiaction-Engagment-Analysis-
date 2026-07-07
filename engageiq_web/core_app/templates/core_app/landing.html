@@ -1,0 +1,38 @@
+{% extends 'core_app/base.html' %}
+{% load static %} {% block content %}
+{% endblock %}
+<main class="hero-section">
+    <h1 class="hero-title">Predict Employee Satisfaction Before Attrition Happens</h1>
+    <p class="hero-subtitle">EngageIQ applies advanced machine learning to analyze enterprise workplace pillars, delivering real-time actionable metrics for HR leaders.</p>
+
+    <div class="hero-actions">
+        <a href="{% url 'register' %}" class="btn-primary">Get Started Now</a>
+        <a href="#features" class="btn-secondary">Learn More</a>
+    </div>
+
+    <form method="GET" action="{% url 'landing' %}" class="email-cta-box">
+        <input type="email" name="trial_email" placeholder="Enter your work email" required>
+        <button type="submit" class="btn-primary">Free Trial</button>
+    </form>
+</main>
+
+<section id="features" class="features-grid">
+    <div class="glass-card feature-card">
+        <h3>Compensation Engine</h3>
+        <p>Evaluate competitive salary frameworks and benefits metrics against production models to check churn correlation weights.</p>
+        <a href="{% url 'register' %}" style="color: var(--accent-orange); text-decoration: none; font-weight:600; font-size:0.9rem;">Explore Pillar →</a>
+    </div>
+
+    <div class="glass-card feature-card">
+        <h3>Work-Life Balance</h3>
+        <p>Quantify employee burnout threshold values through optimized historical logs and operational shifts.</p>
+        <a href="{% url 'register' %}" style="color: var(--accent-orange); text-decoration: none; font-weight:600; font-size:0.9rem;">Explore Pillar →</a>
+    </div>
+
+    <div class="glass-card feature-card">
+        <h3>Manager Dynamics</h3>
+        <p>Map communication gaps and standard relationship matrices directly into predictive retention curves.</p>
+        <a href="{% url 'register' %}" style="color: var(--accent-orange); text-decoration: none; font-weight:600; font-size:0.9rem;">Explore Pillar →</a>
+    </div>
+</section>
+

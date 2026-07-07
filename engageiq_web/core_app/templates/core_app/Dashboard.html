@@ -1,0 +1,106 @@
+{% extends 'core_app/base.html' %}
+{% block content %}
+
+<div class="dashboard-layout">
+
+    <!-- Left Hand: Interactive Input Form Sliders Card -->
+    <div class="glass-card">
+        <h2 style="margin-bottom: 0.5rem; font-size: 1.7rem; letter-spacing: -0.02em;">Predictive Optimization Engine</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 2.5rem; font-size: 0.95rem;">Adjust parameters below to compute an employee's continuous satisfaction level.</p>
+
+        <form method="POST">
+            {% csrf_token %}
+ {% for field in form %}
+    <div class="slider-row">
+        <div class="slider-header">
+            <span style="text-transform: capitalize; font-weight: 600; color: var(--text-primary);">
+                {{ field.label }}
+            </span>
+            <span class="slider-value">5.0</span>
+        </div>
+        {{ field }}
+    </div>
+{% endfor %}
+
+            <button type="submit" class="btn-primary" style="width: 100%; padding: 0.9rem; font-size: 1rem; margin-top: 1rem;">
+                Predict Satisfaction
+            </button>
+        </form>
+    </div>
+
+    <!-- Right Hand: Live Inference Result Reveal HUD Block -->
+    <div class="glass-card hud-score-card">
+        <h3 style="text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.85rem; color: var(--text-secondary);">Model Inference Readout</h3>
+
+        {% if predicted_score %}
+            <div class="hud-big-number">{{ predicted_score }}</div>
+            <p style="font-weight: 600; font-size: 1.1rem; color: var(--accent-orange);">Predicted Satisfaction Score</p>
+            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.5rem;">Value saved securely to database audit logs.</p>
+        {% else %}
+            <div class="hud-big-number" style="color: rgba(255,255,255,0.05); text-shadow: none;">--</div>
+            <p style="color: var(--text-secondary); font-size: 0.95rem;">Configure features and click predict to execute matrix multiplication operations.</p>
+        {% endif %}
+    </div>
+
+</div>
+
+<!-- Historical Analytics Logging Core Database Component -->
+<section id="analytics" class="history-section">
+    <h2>Historical Evaluation Stream</h2>
+    <div class="table-wrapper">
+        <table class="analytics-table">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Compensation</th>
+                    <th>Career Progression</th>
+                    <th>Work-Life Balance</th>
+                    <th>Manager Relationship</th>
+                    <th>Predicted Output</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in history %}
+                <tr>
+                    <td style="color: var(--text-secondary); font-size:0.9rem;">{{ log.created_at|date:"Y-m-d H:i" }}</td>
+                    <td>{{ log.compensation }}</td>
+                    <td>{{ log.career_progression }}</td>
+                    <td>{{ log.work_life_balance }}</td>
+                    <td>{{ log.manager_relationship }}</td>
+                    <td><span class="badge-score">{{ log.predicted_satisfaction }}/10</span></td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align: center; color: var(--text-secondary); padding: 3rem 0;"> No prior model execution logs recorded inside your active user session.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- ⚡ OPTIMIZED: Dynamic Sliders Visualizer using DOM Traversal -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Target all premium rendered sliders
+        const sliders = document.querySelectorAll('.engageiq-slider');
+
+        sliders.forEach(slider => {
+            // Traverse up to the row container, then find the local readout span
+            const row = slider.closest('.slider-row');
+            const output = row ? row.querySelector('.slider-value') : null;
+
+            if (output) {
+                // Set initial database baseline value cleanly
+                output.innerText = parseFloat(slider.value).toFixed(1);
+
+                // Bind real-time input event listener
+                slider.addEventListener('input', function() {
+                    output.innerText = parseFloat(this.value).toFixed(1);
+                });
+            }
+        });
+    });
+</script>
+
+{% endblock %}

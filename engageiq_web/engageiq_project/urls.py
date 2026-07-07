@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('admin/', admin.site.get_urls()), # Django admin portal control panel
+    # 🎯 FIXED: Changed admin.site.get_urls() to admin.site.urls
+    path('admin/', admin.site.urls),       # Django admin portal control panel
     path('', include('core_app.urls')),    # Maps EngageIQ root paths cleanly 🚀
 ]

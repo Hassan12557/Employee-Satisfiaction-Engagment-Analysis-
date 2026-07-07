@@ -1,0 +1,53 @@
+{% extends 'core_app/base.html' %}
+{% block content %}
+
+<div class="auth-container">
+    <div class="glass-card auth-card">
+        <div class="auth-header">
+            <h2>Create Account</h2>
+            <p style="color: var(--text-secondary); font-size: 0.95rem;">Deploy your secure machine learning workplace cluster</p>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="auth-group">
+                <label>Username</label>
+                {{ form.username }}
+            </div>
+            <div class="auth-group">
+                <label>Corporate Email</label>
+                {{ form.email }}
+            </div>
+            <div class="auth-group">
+                <label>Password</label>
+                {{ form.password }}
+            </div>
+            <div class="auth-group">
+                <label>Confirm Password</label>
+                {{ form.confirm_password }}
+            </div>
+
+            <button type="submit" class="btn-primary" style="width: 100%; margin-top: 1rem; padding: 0.85rem;">Register Enterprise</button>
+        </form>
+
+        <div class="auth-footer-link">
+            Already have an account? <a href="{% url 'login' %}">Log in here</a>
+        </div>
+    </div>
+</div>
+
+{% if show_verification_modal %}
+<div class="modal-overlay">
+    <div class="glass-card modal-box">
+        <div class="modal-icon">✉️</div>
+        <h2 style="font-size: 1.8rem; margin-bottom: 0.75rem;">Verify your email</h2>
+        <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 2rem; line-height: 1.6;">
+            We have dispatched a secure, one-time execution activation link to your corporate inbox. Please authenticate the transmission path to initiate inference routines.
+        </p>
+        <a href="{% url 'login' %}" class="btn-primary" style="display: inline-block; width: 100%; padding: 0.85rem;">Proceed to Login</a>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
