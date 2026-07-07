@@ -1,106 +1,174 @@
 {% extends 'core_app/base.html' %}
+{% load static %}
+
 {% block content %}
+<div class="dashboard-viewport">
 
-<div class="dashboard-layout">
+    <div class="dashboard-main-grid">
 
-    <!-- Left Hand: Interactive Input Form Sliders Card -->
-    <div class="glass-card">
-        <h2 style="margin-bottom: 0.5rem; font-size: 1.7rem; letter-spacing: -0.02em;">Predictive Optimization Engine</h2>
-        <p style="color: var(--text-secondary); margin-bottom: 2.5rem; font-size: 0.95rem;">Adjust parameters below to compute an employee's continuous satisfaction level.</p>
+        <div class="workspace-panel glass-card">
+            <div class="panel-header-block">
+                <h3>System Feature Parameters</h3>
+                <p>Adjust variables between index levels 1 to 10 to configure the active inference run.</p>
+            </div>
 
-        <form method="POST">
-            {% csrf_token %}
- {% for field in form %}
-    <div class="slider-row">
-        <div class="slider-header">
-            <span style="text-transform: capitalize; font-weight: 600; color: var(--text-primary);">
-                {{ field.label }}
-            </span>
-            <span class="slider-value">5.0</span>
+            <form method="POST" class="sliders-form-layout">
+                {% csrf_token %}
+
+                {% for field in form %}
+                <div class="slider-node-row">
+                    <div class="slider-labels">
+                        <span class="field-title">{{ field.label }}</span>
+                        <span class="live-counter-val" id="val_{{ field.id_for_label }}">5</span>
+                    </div>
+                    <div class="input-slider-wrapper">
+                        <input type="range" name="{{ field.html_name }}" min="1" max="10" value="5" class="custom-range-slider" id="{{ field.id_for_label }}" oninput="updateSliderValue(this)">
+                    </div>
+                </div>
+                {% endfor %}
+
+                <button type="submit" class="btn-predict-trigger">
+                    Execute Matrix Inference Run 🔮
+                </button>
+            </form>
         </div>
-        {{ field }}
+
+        <div class="workspace-panel glass-card evaluation-output-panel">
+            <div class="panel-header-block">
+                <h3>Live Target Inference Output</h3>
+                <p>Active calculation matrix computed dynamically via Scikit-Learn.</p>
+            </div>
+
+            <div class="inference-display-chamber">
+                {% if predicted_score %}
+                    <div class="result-display-node active-result">
+                        <div class="result-badge-status">Calculation Matrix Verified</div>
+                        <div class="large-score-metrics">{{ predicted_score }} <span class="scale-max">/ 10</span></div>
+                        <p class="score-summary-text">Predicted Satisfaction index array committed to data logs successfully.</p>
+                    </div>
+                {% else %}
+                    <div class="result-display-node pending-state">
+                        <div class="pulsing-radar-circle"></div>
+                        <p class="pending-lbl">Awaiting parameter input values. Set system slider nodes and execute prediction run pipeline.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
     </div>
-{% endfor %}
 
-            <button type="submit" class="btn-primary" style="width: 100%; padding: 0.9rem; font-size: 1rem; margin-top: 1rem;">
-                Predict Satisfaction
-            </button>
-        </form>
-    </div>
+    <div class="history-panel-block glass-card">
+        <div class="panel-header-block">
+            <h3>Historic Operational Ledger Logs</h3>
+            <p>Every calculation configuration array records systematically into active system databases.</p>
+        </div>
 
-    <!-- Right Hand: Live Inference Result Reveal HUD Block -->
-    <div class="glass-card hud-score-card">
-        <h3 style="text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.85rem; color: var(--text-secondary);">Model Inference Readout</h3>
-
-        {% if predicted_score %}
-            <div class="hud-big-number">{{ predicted_score }}</div>
-            <p style="font-weight: 600; font-size: 1.1rem; color: var(--accent-orange);">Predicted Satisfaction Score</p>
-            <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.5rem;">Value saved securely to database audit logs.</p>
-        {% else %}
-            <div class="hud-big-number" style="color: rgba(255,255,255,0.05); text-shadow: none;">--</div>
-            <p style="color: var(--text-secondary); font-size: 0.95rem;">Configure features and click predict to execute matrix multiplication operations.</p>
-        {% endif %}
+        <div class="table-responsive-wrapper">
+            <table class="telemetry-table-layout">
+                <thead>
+                    <tr>
+                        <th>Calculation Sequence Timestamp</th>
+                        <th>Compensation Weight</th>
+                        <th>Career Vector</th>
+                        <th>Work-Life Boundary</th>
+                        <th>Manager Connection</th>
+                        <th>Predicted Score Output</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in history %}
+                    <tr>
+                        <td class="t-stamp">{{ record.created_at|date:"Y-m-d H:i" }}</td>
+                        <td><span class="tbl-num">{{ record.compensation }}</span>/10</td>
+                        <td><span class="tbl-num">{{ record.career_progression }}</span>/10</td>
+                        <td><span class="tbl-num">{{ record.work_life_balance }}</span>/10</td>
+                        <td><span class="tbl-num">{{ record.manager_relationship }}</span>/10</td>
+                        <td class="t-highlight-cell">{{ record.predicted_score }}/10</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="empty-table-state">No simulation models run within this system log yet. Set sliders to populate lines.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 
 </div>
 
-<!-- Historical Analytics Logging Core Database Component -->
-<section id="analytics" class="history-section">
-    <h2>Historical Evaluation Stream</h2>
-    <div class="table-wrapper">
-        <table class="analytics-table">
-            <thead>
-                <tr>
-                    <th>Timestamp</th>
-                    <th>Compensation</th>
-                    <th>Career Progression</th>
-                    <th>Work-Life Balance</th>
-                    <th>Manager Relationship</th>
-                    <th>Predicted Output</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for log in history %}
-                <tr>
-                    <td style="color: var(--text-secondary); font-size:0.9rem;">{{ log.created_at|date:"Y-m-d H:i" }}</td>
-                    <td>{{ log.compensation }}</td>
-                    <td>{{ log.career_progression }}</td>
-                    <td>{{ log.work_life_balance }}</td>
-                    <td>{{ log.manager_relationship }}</td>
-                    <td><span class="badge-score">{{ log.predicted_satisfaction }}/10</span></td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="6" style="text-align: center; color: var(--text-secondary); padding: 3rem 0;"> No prior model execution logs recorded inside your active user session.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</section>
-
-<!-- ⚡ OPTIMIZED: Dynamic Sliders Visualizer using DOM Traversal -->
 <script>
+    // Synchronize display text numbers live alongside user slide shifts
+    function updateSliderValue(slider) {
+        const outputNode = document.getElementById('val_' + slider.id);
+        if (outputNode) {
+            outputNode.innerText = slider.value;
+        }
+    }
+
+    // Initialize all input node states safely on viewport paint cycles
     document.addEventListener("DOMContentLoaded", function() {
-        // Target all premium rendered sliders
-        const sliders = document.querySelectorAll('.engageiq-slider');
-
-        sliders.forEach(slider => {
-            // Traverse up to the row container, then find the local readout span
-            const row = slider.closest('.slider-row');
-            const output = row ? row.querySelector('.slider-value') : null;
-
-            if (output) {
-                // Set initial database baseline value cleanly
-                output.innerText = parseFloat(slider.value).toFixed(1);
-
-                // Bind real-time input event listener
-                slider.addEventListener('input', function() {
-                    output.innerText = parseFloat(this.value).toFixed(1);
-                });
-            }
-        });
+        const sliders = document.querySelectorAll('.custom-range-slider');
+        sliders.forEach(slider => updateSliderValue(slider));
     });
 </script>
 
+<style>
+    .dashboard-viewport { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; font-family: sans-serif; color: #fff; }
+    .dashboard-main-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 2rem; margin-bottom: 3rem; }
+
+    @media (max-width: 640px) {
+        .dashboard-main-grid { grid-template-columns: 1fr; }
+    }
+
+    .workspace-panel { background: rgba(13,17,23,0.6); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 2rem; display: flex; flex-direction: column; }
+    .panel-header-block h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.35rem; letter-spacing: -0.01em; }
+    .panel-header-block p { color: #718096; font-size: 0.85rem; line-height: 1.4; margin-bottom: 2rem; }
+
+    /* Interactive Sliders Visual Layer Layouts */
+    .sliders-form-layout { display: flex; flex-direction: column; gap: 1.5rem; }
+    .slider-node-row { display: flex; flex-direction: column; gap: 0.5rem; }
+    .slider-labels { display: flex; justify-content: space-between; align-items: center; }
+    .field-title { font-size: 0.9rem; font-weight: 600; color: #e2e8f0; }
+    .live-counter-val { background: rgba(255,102,0,0.1); border: 1px solid rgba(255,102,0,0.2); color: #ff6600; padding: 0.15rem 0.6rem; border-radius: 4px; font-weight: 700; font-size: 0.85rem; }
+
+    .input-slider-wrapper { width: 100%; display: flex; align-items: center; }
+    .custom-range-slider {
+        -webkit-appearance: none; width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; outline: none;
+    }
+    .custom-range-slider::-webkit-slider-thumb {
+        -webkit-appearance: none; width: 18px; height: 18px; background: #ff6600; border-radius: 50%; cursor: pointer; transition: transform 0.1s ease;
+    }
+    .custom-range-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+    .btn-predict-trigger {
+        background: #ff6600; color: #fff; border: none; border-radius: 8px; padding: 1rem; font-size: 1rem; font-weight: 700; cursor: pointer; margin-top: 1rem; transition: background 0.2s ease;
+    }
+    .btn-predict-trigger:hover { background: #e05500; }
+
+    /* Evaluation Result Target Windows */
+    .inference-display-chamber { flex-grow: 1; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.02); border-radius: 8px; padding: 2rem; text-align: center; }
+    .result-display-node { width: 100%; }
+    .result-badge-status { display: inline-block; background: rgba(82, 250, 124, 0.1); border: 1px solid rgba(82, 250, 124, 0.2); color: #52fa7c; font-size: 0.75rem; font-weight: 700; padding: 0.3rem 0.8rem; border-radius: 50px; text-transform: uppercase; margin-bottom: 1rem; }
+    .large-score-metrics { font-size: 4.5rem; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 1rem; }
+    .large-score-metrics .scale-max { font-size: 1.5rem; color: #4a5568; font-weight: 400; }
+    .score-summary-text { color: #a0aec0; font-size: 0.9rem; line-height: 1.5; max-width: 320px; margin: 0 auto; }
+
+    .pending-state { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; padding: 0 1rem; }
+    .pending-lbl { color: #4a5568; font-size: 0.9rem; line-height: 1.5; max-width: 300px; }
+    .pulsing-radar-circle { width: 40px; height: 40px; background: rgba(255,102,0,0.1); border: 2px solid #ff6600; border-radius: 50%; animation: radarPulse 2s infinite ease-in-out; }
+
+    /* Historical Ledger Layout Matrix */
+    .history-panel-block { background: rgba(13,17,23,0.6); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 2.5rem; }
+    .table-responsive-wrapper { width: 100%; overflow-x: auto; margin-top: 1rem; }
+    .telemetry-table-layout { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; }
+    .telemetry-table-layout th { background: rgba(255,255,255,0.02); color: #718096; text-transform: uppercase; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; padding: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .telemetry-table-layout td { padding: 1rem; border-bottom: 1px solid rgba(255,255,255,0.03); color: #cbd5e0; }
+    .t-stamp { color: #718096; font-family: monospace; }
+    .tbl-num { font-weight: 600; color: #fff; }
+    .t-highlight-cell { color: #ff6600; font-weight: 700; }
+    .empty-table-state { text-align: center; color: #4a5568; padding: 3rem !important; font-style: italic; }
+
+    @keyframes radarPulse { 0% { transform: scale(0.8); opacity: 0.5; } 50% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(0.8); opacity: 0.5; } }
+</style>
 {% endblock %}

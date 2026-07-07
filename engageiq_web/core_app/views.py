@@ -44,7 +44,6 @@ def landing_page(request):
     """
     Renders the premium dark-grid hero landing page layout.
     """
-    # If a corporate email is sent via the "Free Trial" text field, forward it to register
     trial_email = request.GET.get('trial_email', '')
     if trial_email:
         request.session['trial_email'] = trial_email
@@ -57,24 +56,23 @@ def register_user(request):
     """
     Handles sign-ups and triggers your verification pop-up modal.
     """
-    # Grab pre-filled email from free trial landing action if it exists
     initial_data = {}
     session_email = request.session.get('trial_email', '')
     if session_email:
         initial_data['email'] = session_email
-        # Clear it from the session so it doesn't linger permanently
         del request.session['trial_email']
 
     form = HRRegistrationForm(request.POST or None, initial=initial_data)
     show_verification_modal = False
 
-    if request.method == 'POST' and form.is_validate():
+    if request.method == 'POST' and form.is_valid():
         user = form.save(commit=False)
         user.set_password(form.cleaned_data['password'])
         user.is_active = False  # Inactive until email verification modal confirms
         user.save()
 
-        # Intercept redirection to trigger your "Verify your email" template pop-up
+        # Log user session parameters active immediately
+        login(request, user)
         show_verification_modal = True
 
     return render(request, 'core_app/register.html', {
@@ -117,7 +115,6 @@ def dashboard(request):
     predicted_score = None
 
     if request.method == 'POST' and form.is_valid():
-        # Extract clean slider numbers (1.0 to 10.0) from the form state
         comp = form.cleaned_data['compensation']
         prog = form.cleaned_data['career_progression']
         wlb = form.cleaned_data['work_life_balance']
@@ -127,14 +124,14 @@ def dashboard(request):
         input_features = np.array([[comp, prog, wlb, mngr]])
 
         if ml_model is not None:
-            # Run prediction on the fly
+            # Run inference execution on your live .pkl model checkpoint
             raw_prediction = ml_model.predict(input_features)[0]
             predicted_score = round(float(raw_prediction), 1)
 
-            # Instantly save record into database mapped to this logged-in HR account
+            # Instantly save record into database mapped directly to your model fields
             prediction_record = form.save(commit=False)
-            prediction_record.hr_manager = request.user
-            prediction_record.predicted_satisfaction = predicted_score
+            prediction_record.user = request.user                 # FIXED: Matches models.py 'user'
+            prediction_record.predicted_score = predicted_score   # FIXED: Matches models.py 'predicted_score'
             prediction_record.save()
 
             # Reset form clean after a successful post to keep UI pristine
@@ -142,8 +139,8 @@ def dashboard(request):
         else:
             messages.error(request, "ML Engine offline. Unable to calculate satisfaction.")
 
-    # Retrieve historical audit trails to render your bottom table analytics view
-    history = SatisfactionPrediction.objects.filter(hr_manager=request.user)
+    # Retrieve historical audit trails based on the correct user relationship mapping
+    history = SatisfactionPrediction.objects.filter(user=request.user) # FIXED: Matches models.py 'user'
 
     return render(request, 'core_app/dashboard.html', {
         'form': form,

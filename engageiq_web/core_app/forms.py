@@ -2,7 +2,14 @@ from django import forms
 from django.contrib.auth.models import User
 from .models import SatisfactionPrediction
 
-
+class PredictionForm(forms.ModelForm):
+    class Meta:
+        model = SatisfactionPrediction
+        fields = ['compensation', 'career_progression', 'work_life_balance', 'manager_relationship']
+        widgets = {
+            field: forms.NumberInput(attrs={'min': 1, 'max': 10, 'class': 'form-input-slider'})
+            for field in ['compensation', 'career_progression', 'work_life_balance', 'manager_relationship']
+        }
 class HRRegistrationForm(forms.ModelForm):
     """
     Sleek authentication form to handle custom corporate email
