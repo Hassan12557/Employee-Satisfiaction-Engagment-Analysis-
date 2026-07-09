@@ -116,14 +116,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
-# Email Configuration - Secure Gateway Loop
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-# ⚠️ REPLACE THESE WITH YOUR ACTUAL CONFIGURATION
-EMAIL_HOST_USER = 'your_professional_gmail@gmail.com'
-EMAIL_HOST_PASSWORD = 'your_16_digit_app_password'
+# ⚠️ Make sure these are your real, authenticated details:
+EMAIL_HOST_USER = 'your_real_email@gmail.com'
+EMAIL_HOST_PASSWORD = 'xxxx xxxx xxxx xxxx'  # 🌟 Your 16-digit Google App Password
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
