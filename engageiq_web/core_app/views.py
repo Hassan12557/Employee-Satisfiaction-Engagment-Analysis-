@@ -122,6 +122,7 @@ def dashboard(request):
     predicted_score = None
 
     if request.method == 'POST' and form.is_valid():
+        # Extract clean slider numbers from the form state
         comp = form.cleaned_data['compensation']
         prog = form.cleaned_data['career_progression']
         wlb = form.cleaned_data['work_life_balance']
@@ -131,22 +132,29 @@ def dashboard(request):
         input_features = np.array([[comp, prog, wlb, mngr]])
 
         if ml_model is not None:
-            # 🏽 Safe from type linter errors now because of the Any declaration above
+            # Run prediction on the fly
             raw_prediction = ml_model.predict(input_features)[0]
             predicted_score = round(float(raw_prediction), 1)
 
-            prediction_record = form.save(commit=False)
-            prediction_record.user = request.user
-            prediction_record.predicted_score = predicted_score
-            prediction_record.save()
+            # 🎯 FIX 1: Save directly to the database using your exact models.py field names
+            SatisfactionPrediction.objects.create(
+                user=request.user,
+                compensation=int(comp),
+                career_progression=int(prog),
+                work_life_balance=int(wlb),
+                manager_relationship=int(mngr),
+                predicted_score=predicted_score
+            )
 
+            # Reset form clean after a successful post to keep UI pristine
             form = EngagementSlidersForm()
         else:
             messages.error(request, "ML Engine offline. Unable to calculate satisfaction.")
 
+    # 🎯 FIX 2: Changed 'hr_manager' to 'user' so Django can find the column instantly!
     history = SatisfactionPrediction.objects.filter(user=request.user)
 
-    return render(request, 'core_app/Dashboard.html', {
+    return render(request, 'core_app/dashboard.html', {
         'form': form,
         'predicted_score': predicted_score,
         'history': history
