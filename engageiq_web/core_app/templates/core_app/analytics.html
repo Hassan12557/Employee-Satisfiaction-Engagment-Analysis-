@@ -1,26 +1,153 @@
 {% extends 'core_app/base.html' %}
 {% block content %}
-<div class="info-viewport">
+<div class="analytics-viewport">
+
     <div class="page-title-block">
         <span class="sub-badge">System Intelligence Workspace</span>
-        <h2>Macro-Analytics Matrix</h2>
-        <p>Monitor high-level corporate organizational health signals through automated algorithmic monitoring panels.</p>
+        <h2>Systemic Macro-Analytics Matrix</h2>
+        <p>Real-time corporate structural health evaluations computed via the active inference engine pipelines.</p>
     </div>
 
-    <div class="analytics-showcase glass-card">
-        <div class="analytics-placeholder">
-            <div class="radar-scan"></div>
-            <h3>Pipeline Ready for Visualization Injection</h3>
-            <p>This tracking interface is pre-configured to host data visualizations. You can plug in Matplotlib, Seaborn, or interactive JavaScript charts (like Chart.js) right here.</p>
+    <div class="metrics-summary-strip">
+        <div class="metric-node glass-card">
+            <span class="m-lbl">Total Inference Requests</span>
+            <div class="m-val">{{ total_runs }}</div>
+            <span class="m-sub">Active telemetry queries logged</span>
         </div>
+        <div class="metric-node glass-card">
+            <span class="m-lbl">Mean System Satisfaction</span>
+            <div class="m-val score-highlight">{{ system_avg }}<span class="scale-max">/10</span></div>
+            <span class="m-sub">Aggregate workspace baseline score</span>
+        </div>
+    </div>
+
+    <div class="analytics-charts-grid">
+
+        <div class="chart-panel-card glass-card">
+            <div class="panel-meta">
+                <h3>Satisfaction Density Spectrum</h3>
+                <p>Frequency distribution curves indicating overall organizational morale groupings.</p>
+            </div>
+            <div class="canvas-container">
+                <canvas id="densityChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-panel-card glass-card">
+            <div class="panel-meta">
+                <h3>Feature Driver Evaluation Weights</h3>
+                <p>Mean calculation parameters cross-referenced across running calculations.</p>
+            </div>
+            <div class="canvas-container">
+                <canvas id="featuresRadarChart"></canvas>
+            </div>
+        </div>
+
     </div>
 </div>
 
+{{ density_distribution|json_script:"density-data-json" }}
+{{ feature_data|json_script:"feature-data-json" }}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    /* global Chart */
+    // ^ This explicit flag tells your editor's linter that Chart is a global CDN variable!
+
+    // Safely parse the clean HTML script elements using standard JavaScript
+    const rawDensityData = JSON.parse(document.getElementById('density-data-json').textContent);
+    const rawFeatureData = JSON.parse(document.getElementById('feature-data-json').textContent);
+
+    // Global Override configuration rules to handle crisp dark appearance profiles
+    Chart.defaults.color = '#718096';
+    Chart.defaults.font.family = '-apple-system, system-ui, sans-serif';
+
+    // RENDER CORE A: Density Curve (Line Matrix Style)
+    const ctxDensity = document.getElementById('densityChart').getContext('2d');
+    new Chart(ctxDensity, {
+        type: 'line',
+        data: {
+            labels: ['1.0', '2.0', '3.0', '4.0', '5.0', '6.0', '7.0', '8.0', '9.0', '10.0'],
+            datasets: [{
+                label: 'Inference Frequency Record Count',
+                data: rawDensityData,
+                borderColor: '#ff6600',
+                backgroundColor: 'rgba(255, 102, 0, 0.08)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: '#ff6600',
+                pointHoverRadius: 7
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { grid: { color: 'rgba(255,255,255,0.03)' } },
+                y: { grid: { color: 'rgba(255,255,255,0.03)' }, beginAtZero: true }
+            }
+        }
+    });
+
+    // RENDER CORE B: Feature Driver Vectors (Radar Dimension Matrix)
+    const ctxRadar = document.getElementById('featuresRadarChart').getContext('2d');
+    new Chart(ctxRadar, {
+        type: 'radar',
+        data: {
+            labels: ['Compensation Weight', 'Career Velocity', 'Work-Life Boundary', 'Managerial Connection'],
+            datasets: [{
+                label: 'Mean System Attribute Configurations',
+                data: rawFeatureData,
+                borderColor: '#52fa7c',
+                backgroundColor: 'rgba(82, 250, 124, 0.08)',
+                borderWidth: 2,
+                pointBackgroundColor: '#52fa7c',
+                pointHoverRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                r: {
+                    grid: { color: 'rgba(255,255,255,0.06)' },
+                    angleLines: { color: 'rgba(255,255,255,0.06)' },
+                    pointLabels: { color: '#e2e8f0', font: { size: 11, weight: '600' } },
+                    suggestedMin: 1,
+                    suggestedMax: 10,
+                    ticks: { display: false }
+                }
+            }
+        }
+    });
+</script>
 <style>
-    .analytics-showcase { background: rgba(13,17,23,0.6); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 5rem 2rem; text-align: center; }
-    .analytics-placeholder h3 { font-size: 1.5rem; margin-bottom: 1rem; }
-    .analytics-placeholder p { color: #a0aec0; max-width: 500px; margin: 0 auto; line-height: 1.6; font-size: 0.95rem; }
-    .radar-scan { width: 60px; height: 60px; border: 2px dashed #ff6600; border-radius: 50%; margin: 0 auto 2rem; animation: spin 4s linear infinite; }
-    @keyframes spin { 100% { transform: rotate(300deg); } }
+    .analytics-viewport { max-width: 1200px; margin: 0 auto; padding: 4rem 1rem 6rem; color: #fff; font-family: sans-serif; }
+    .page-title-block { text-align: center; margin-bottom: 3.5rem; }
+    .sub-badge { display: inline-block; background: rgba(255,102,0,0.1); color: #ff6600; font-size: 0.8rem; font-weight: 700; padding: 0.3rem 0.8rem; border-radius: 4px; text-transform: uppercase; margin-bottom: 1rem; letter-spacing: 0.05em; }
+    .page-title-block h2 { font-size: 2.5rem; font-weight: 800; margin-bottom: 0.6rem; letter-spacing: -0.02em; }
+    .page-title-block p { color: #a0aec0; max-width: 650px; margin: 0 auto; line-height: 1.6; font-size: 0.95rem; }
+
+    /* Summary Matrix Strips Configuration Layouts */
+    .metrics-summary-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
+    .metric-node { background: rgba(13,17,23,0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 1.75rem 2rem; position: relative; overflow: hidden; }
+    .m-lbl { color: #718096; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 0.5rem; }
+    .m-val { font-size: 2.5rem; font-weight: 800; line-height: 1.1; margin-bottom: 0.35rem; }
+    .m-val.score-highlight { color: #52fa7c; }
+    .scale-max { font-size: 1rem; color: #4a5568; font-weight: 400; margin-left: 0.2rem; }
+    .m-sub { color: #4a5568; font-size: 0.8rem; display: block; }
+
+    /* Core Charts Configuration Grid Splits */
+    .analytics-charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 2rem; }
+    @media (max-width: 640px) { .analytics-charts-grid { grid-template-columns: 1fr; } }
+
+    .chart-panel-card { background: rgba(13,17,23,0.55); border: 1px solid rgba(255,255,255,0.06); padding: 2rem; border-radius: 16px; display: flex; flex-direction: column; }
+    .panel-meta h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.35rem; }
+    .panel-meta p { color: #718096; font-size: 0.85rem; line-height: 1.4; margin-bottom: 2rem; }
+
+    .canvas-container { position: relative; width: 100%; height: 320px; flex-grow: 1; }
 </style>
 {% endblock %}
