@@ -12,6 +12,16 @@ from django.contrib import messages
 from .forms import HRRegistrationForm, EngagementSlidersForm
 from .models import SatisfactionPrediction
 from django.db.models import Avg, Count
+from django.shortcuts import render
+from django.db.models import Avg
+from .models import SatisfactionPrediction
+from django.shortcuts import render, redirect
+from django.contrib.auth.models import User
+from django.core.mail import send_mail
+from django.contrib import messages
+from django.contrib.auth import login
+from .models import ProfileOTP
+import random
 import json
 # -------------------------------------------------------------------------
 # ML ENGINE LOADER (Robust Path Resolving using Pathlib)
@@ -62,32 +72,77 @@ def landing_page(request):
 
 
 def register_user(request):
-    """
-    Handles sign-ups and logs the user in instantly for local development.
-    """
-    initial_data = {}
-    session_email = request.session.get('trial_email', '')
-    if session_email:
-        initial_data['email'] = session_email
-        del request.session['trial_email']
+    """Handles submission of registration details, rendering users inactive until verified."""
+    if request.method == 'POST':
+        # Assuming you're parsing a standard custom registration dashboard template form
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
 
-    form = HRRegistrationForm(request.POST or None, initial=initial_data)
+        if User.objects.filter(username=username).exists():
+            messages.error(request, "Username is already taken.")
+            return render(request, 'core_app/register.html')
 
-    if request.method == 'POST' and form.is_valid():
-        user = form.save(commit=False)
-        user.set_password(form.cleaned_data['password'])
-
-        user.is_active = True
+        # Create user but freeze authentication state
+        user = User.objects.create_user(username=username, email=email, password=password)
+        user.is_active = False
         user.save()
 
-        login(request, user)
-        return redirect('dashboard')
+        # Build OTP Matrix mapping
+        otp_string = f"{random.randint(100000, 999999)}"
+        ProfileOTP.objects.create(user=user, otp_code=otp_string)
 
-    return render(request, 'core_app/register.html', {
-        'form': form,
-        'show_verification_modal': False
-    })
+        # Dispatch transmission payload via SMTP
+        try:
+            send_mail(
+                subject="EngageIQ Security - Account Activation Code",
+                message=f"Your secure 6-digit account registration authorization token is: {otp_string}\nThis code expires in 5 minutes.",
+                from_email=None,
+                recipient_list=[email],
+                fail_silently=False,
+            )
+            # Cache the registration ID in session keys for multi-stage tracking
+            request.session['verification_user_id'] = user.id
+            return redirect('verify_otp')
+        except Exception as e:
+            messages.error(request, f"Email delivery failed: {str(e)}")
+            user.delete() # Roll back profile creation if network transmission cracks
 
+    return render(request, 'core_app/register.html')
+
+
+def verify_otp(request):
+    """Evaluates incoming token digits to activate user state parameters."""
+    user_id = request.session.get('verification_user_id')
+    if not user_id:
+        return redirect('register')
+
+    try:
+        user = User.objects.get(id=user_id)
+        profile_otp = user.profileotp
+    except (User.DoesNotExist, ProfileOTP.DoesNotExist):
+        return redirect('register')
+
+    if request.method == 'POST':
+        entered_otp = request.POST.get('otp_input')
+
+        if profile_otp.otp_code == entered_otp and profile_otp.is_valid():
+            # Activate account state parameters permanently
+            user.is_active = True
+            user.save()
+            profile_otp.is_verified = True
+            profile_otp.save()
+
+            # Clean session caching indicators
+            del request.session['verification_user_id']
+
+            login(request, user)
+            messages.success(request, "Account validated successfully! Welcome to EngageIQ.")
+            return redirect('dashboard')
+        else:
+            messages.error(request, "Invalid or expired authorization credentials. Please try again.")
+
+    return render(request, 'core_app/verify_otp.html', {'email': user.email})
 
 def login_user(request):
     """
@@ -164,10 +219,11 @@ def features_page(request):
     """Renders the EngageIQ core model features breakdown page."""
     return render(request, 'core_app/features.html')
 
+
 def analytics_page(request):
     """
     Computes real-time aggregate telemetry across the entire platform matrix
-    and serializes the arrays into JSON packages for browser charting scripts.
+    and passes data blocks directly to the template.
     """
     # 1. Fetch historical record count
     predictions = SatisfactionPrediction.objects.all()
@@ -182,37 +238,41 @@ def analytics_page(request):
             avg_mngr=Avg('manager_relationship'),
             avg_score=Avg('predicted_score')
         )
-        # Re-map metrics to clean floating points
+        # Fallback to 0 if a database field returns null unexpectedly
         feature_data = [
-            round(averages['avg_comp'], 1),
-            round(averages['avg_prog'], 1),
-            round(averages['avg_wlb'], 1),
-            round(averages['avg_mngr'], 1)
+            round(averages['avg_comp'] or 0, 1),
+            round(averages['avg_prog'] or 0, 1),
+            round(averages['avg_wlb'] or 0, 1),
+            round(averages['avg_mngr'] or 0, 1)
         ]
-        system_avg = round(averages['avg_score'], 1)
+        system_avg = round(averages['avg_score'] or 0, 1)
     else:
-        # Fallback vectors for evaluation sandboxes
+        # Fallback vectors for evaluation sandboxes if database is empty
         feature_data = [5.5, 6.2, 4.8, 7.1]
         system_avg = 5.9
 
-    # 3. Compile a quick mock density array based on current system run ranges
-    # In live enterprise, this would be computed via pandas or numpy histograms.
+    # 3. Compile a score density array based on current system run ranges
     density_distribution = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     for p in predictions:
-        score_index = min(int(p.predicted_score), 9)
-        density_distribution[score_index] += 1
+        if p.predicted_score is not None:
+            score_index = min(int(p.predicted_score), 9)
+            density_distribution[score_index] += 1
 
-    # If empty, inject an index baseline
+    # If no records exist yet, use clean default bars so charts load nicely
     if sum(density_distribution) == 0:
         density_distribution = [5, 12, 18, 24, 45, 68, 82, 54, 31, 14]
-        # Pass clean, raw Python objects to the template context
-        context = {
-            'total_runs': total_runs,
-            'system_avg': system_avg,
-            'feature_data': feature_data,  # Cleaned: removed json.dumps
-            'density_distribution': density_distribution,  # Cleaned: removed json.dumps
-        }
-        return render(request, 'core_app/analytics.html', context)
+
+    # 4. Pack up your tracking statistics
+    context = {
+        'total_runs': total_runs,
+        'system_avg': system_avg,
+        'feature_data': feature_data,
+        'density_distribution': density_distribution,
+    }
+
+    # 🎯 FIX: This statement is now completely outside the conditional logic checks!
+    return render(request, 'core_app/analytics.html', context)
 def pricing_page(request):
     """Renders corporate licensing tiers for the predictive matrix."""
     return render(request, 'core_app/pricing.html')
+

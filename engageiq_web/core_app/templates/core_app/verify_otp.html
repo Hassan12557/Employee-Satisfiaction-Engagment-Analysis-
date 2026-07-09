@@ -1,0 +1,49 @@
+{% extends 'core_app/base.html' %}
+{% block content %}
+<div class="auth-viewport">
+    <div class="auth-card glass-card">
+        <div class="auth-header">
+            <span class="lock-icon">🛡️</span>
+            <h2>Security Verification</h2>
+            <p>An activation token has been dispatched to <span class="target-email">{{ email }}</span>.</p>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST" autocomplete="off">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="otp_input">Enter 6-Digit Verification Token</label>
+                <input type="text" name="otp_input" id="otp_input" maxlength="6" placeholder="000000" required>
+            </div>
+            <button type="submit" class="btn-primary auth-submit-btn">Verify Account Identity</button>
+        </form>
+    </div>
+</div>
+
+<style>
+    .auth-viewport { display: flex; align-items: center; justify-content: center; min-height: 80vh; padding: 2rem 1rem; color: #fff; font-family: sans-serif; }
+    .auth-card { background: rgba(13, 17, 23, 0.6); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 16px; padding: 3rem 2.5rem; width: 100%; max-width: 420px; text-align: center; }
+    .lock-icon { font-size: 2.5rem; display: block; margin-bottom: 1rem; }
+    .auth-header h2 { font-size: 1.75rem; margin-bottom: 0.5rem; }
+    .auth-header p { color: #718096; font-size: 0.9rem; line-height: 1.5; margin-bottom: 2rem; }
+    .target-email { color: #ff6600; font-weight: 600; }
+
+    .form-group { text-align: left; margin-bottom: 1.5rem; }
+    .form-group label { display: block; color: #a0aec0; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .form-group input { width: 100%; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 0.75rem 1rem; color: #fff; font-size: 1.25rem; font-weight: 700; text-align: center; letter-spacing: 0.3em; transition: all 0.3s ease; }
+    .form-group input:focus { outline: none; border-color: #ff6600; box-shadow: 0 0 12px rgba(255, 102, 0, 0.2); }
+
+    .auth-submit-btn { width: 100%; padding: 0.85rem; font-weight: 700; font-size: 1rem; border-radius: 8px; cursor: pointer; border: none; background: #ff6600; color: #fff; transition: background 0.2s; }
+    .auth-submit-btn:hover { background: #e05500; }
+
+    .alert { background: rgba(245, 101, 101, 0.1); border: 1px solid #f56565; color: #f56565; padding: 0.75rem; border-radius: 6px; margin-bottom: 1.5rem; font-size: 0.85rem; }
+    .alert-success { background: rgba(72, 187, 120, 0.1); border: 1px solid #48bb78; color: #48bb78; }
+</style>
+{% endblock %}

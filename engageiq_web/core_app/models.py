@@ -30,7 +30,32 @@
 
 from django.db import models
 from django.contrib.auth.models import User
+import random
+from django.db import models
+from django.contrib.auth.models import User
+from django.utils import timezone
+import datetime
 
+
+class ProfileOTP(models.Model):
+    """
+    Ties into the standard User model, tracking unique registration
+    verification digits and operational activation states.
+    """
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    otp_code = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_verified = models.BooleanField(default=False)
+
+    def is_valid(self):
+        # The OTP expires exactly 5 minutes after creation
+        return timezone.now() < self.created_at + datetime.timedelta(minutes=5)
+
+    def generate_new_otp(self):
+        self.otp_code = f"{random.randint(100000, 999999)}"
+        self.created_at = timezone.now()
+        self.save()
+        return self.otp_code
 class SatisfactionPrediction(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     compensation = models.IntegerField()
