@@ -54,7 +54,7 @@ def landing_page(request):
 
 def register_user(request):
     """
-    Handles sign-ups and triggers your verification pop-up modal.
+    Handles sign-ups and logs the user in instantly for local development.
     """
     initial_data = {}
     session_email = request.session.get('trial_email', '')
@@ -63,23 +63,25 @@ def register_user(request):
         del request.session['trial_email']
 
     form = HRRegistrationForm(request.POST or None, initial=initial_data)
-    show_verification_modal = False
 
     if request.method == 'POST' and form.is_valid():
         user = form.save(commit=False)
         user.set_password(form.cleaned_data['password'])
-        user.is_active = False  # Inactive until email verification modal confirms
+
+        # 🎯 FIX 1: Set this to True so you aren't locked out locally!
+        user.is_active = True
         user.save()
 
-        # Log user session parameters active immediately
+        # 🎯 FIX 2: Log the user in automatically right here
         login(request, user)
-        show_verification_modal = True
+
+        # 🎯 FIX 3: Redirect them straight to the workspace dashboard!
+        return redirect('dashboard')
 
     return render(request, 'core_app/register.html', {
         'form': form,
-        'show_verification_modal': show_verification_modal
+        'show_verification_modal': False  # Turn off the popup blocker for now
     })
-
 
 def login_user(request):
     """
