@@ -1,6 +1,8 @@
-import os
-import joblib
 import numpy as np
+from pathlib import Path
+import joblib
+from typing import Any  # 🎯 Added for strict type analysis compliance
+
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
@@ -11,22 +13,28 @@ from .forms import HRRegistrationForm, EngagementSlidersForm
 from .models import SatisfactionPrediction
 
 # -------------------------------------------------------------------------
-# ML ENGINE LOADER (Robust Path Resolving)
+# ML ENGINE LOADER (Robust Path Resolving using Pathlib)
 # -------------------------------------------------------------------------
 MODEL_FILENAME = 'satisfaction_regressor.pkl'
-ml_model = None
 
-# Search across common relative paths based on project structure
+# 🎯 Hinting ': Any' tells the IDE linter that this can become a Scikit-Learn model object
+ml_model: Any = None
+
+# Resolve current file's directory cleanly
+CURRENT_DIR = Path(__file__).resolve().parent
+
+# Search paths using safe path arithmetic operators
 possible_paths = [
-    os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'saved_models', MODEL_FILENAME)),
-    os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'src', 'saved_models', MODEL_FILENAME)),
-    os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'saved_models', MODEL_FILENAME)),
+    CURRENT_DIR / '..' / '..' / 'saved_models' / MODEL_FILENAME,
+    CURRENT_DIR / '..' / '..' / 'src' / 'saved_models' / MODEL_FILENAME,
+    CURRENT_DIR / '..' / 'saved_models' / MODEL_FILENAME,
 ]
 
 for path in possible_paths:
-    if os.path.exists(path):
+    if path.exists():  # Standard Pathlib check
         try:
-            ml_model = joblib.load(path)
+            # Convert Path object back to a clean string format for joblib compatibility
+            ml_model = joblib.load(str(path.resolve()))
             print(f"🏽 EngageIQ ML Engine loaded successfully from: {path}")
             break
         except Exception as e:
@@ -68,20 +76,17 @@ def register_user(request):
         user = form.save(commit=False)
         user.set_password(form.cleaned_data['password'])
 
-        # 🎯 FIX 1: Set this to True so you aren't locked out locally!
         user.is_active = True
         user.save()
 
-        # 🎯 FIX 2: Log the user in automatically right here
         login(request, user)
-
-        # 🎯 FIX 3: Redirect them straight to the workspace dashboard!
         return redirect('dashboard')
 
     return render(request, 'core_app/register.html', {
         'form': form,
-        'show_verification_modal': False  # Turn off the popup blocker for now
+        'show_verification_modal': False
     })
+
 
 def login_user(request):
     """
@@ -126,23 +131,20 @@ def dashboard(request):
         input_features = np.array([[comp, prog, wlb, mngr]])
 
         if ml_model is not None:
-            # Run inference execution on your live .pkl model checkpoint
+            # 🏽 Safe from type linter errors now because of the Any declaration above
             raw_prediction = ml_model.predict(input_features)[0]
             predicted_score = round(float(raw_prediction), 1)
 
-            # Instantly save record into database mapped directly to your model fields
             prediction_record = form.save(commit=False)
-            prediction_record.user = request.user                 # FIXED: Matches models.py 'user'
-            prediction_record.predicted_score = predicted_score   # FIXED: Matches models.py 'predicted_score'
+            prediction_record.user = request.user
+            prediction_record.predicted_score = predicted_score
             prediction_record.save()
 
-            # Reset form clean after a successful post to keep UI pristine
             form = EngagementSlidersForm()
         else:
             messages.error(request, "ML Engine offline. Unable to calculate satisfaction.")
 
-    # Retrieve historical audit trails based on the correct user relationship mapping
-    history = SatisfactionPrediction.objects.filter(user=request.user) # FIXED: Matches models.py 'user'
+    history = SatisfactionPrediction.objects.filter(user=request.user)
 
     return render(request, 'core_app/dashboard.html', {
         'form': form,
