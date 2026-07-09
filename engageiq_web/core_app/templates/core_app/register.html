@@ -20,7 +20,7 @@
                     {% endif %}
                 </div>
             {% endfor %}
-            <button type="submit" class="btn-submit">Initialize Core Profile</button>
+            <button type="submit" class="btn-submit">Create a account</button>
         </form>
     </div>
 
@@ -43,7 +43,19 @@
     </div>
     {% endif %}
 </div>
-
+<!-- 🎯 ERROR DISPLAY CONTAINER -->
+{% if form.errors %}
+    <div class="alert alert-error" style="background: rgba(245, 101, 101, 0.1); border: 1px solid #f56565; color: #f56565; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; text-align: left;">
+        <strong style="display: block; margin-bottom: 0.5rem;">Registration Issues:</strong>
+        <ul style="margin: 0; padding-left: 1.2rem; font-size: 0.9rem;">
+            {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                    <li><strong>{{ field|capfirst }}:</strong> {{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
 <style>
     .auth-viewport {
         min-height: calc(100vh - 100px);
