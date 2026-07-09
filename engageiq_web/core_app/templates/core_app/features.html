@@ -1,0 +1,41 @@
+{% extends 'core_app/base.html' %}
+{% block content %}
+<div class="info-viewport">
+    <div class="page-title-block">
+        <span class="sub-badge">Core Engine Architecture</span>
+        <h2>Predictive Feature Vectors</h2>
+        <p>EngageIQ evaluates employee retention risk through four highly correlation-optimized parameters.</p>
+    </div>
+
+    <div class="features-grid">
+        <div class="feature-card glass-card">
+            <h3>📈 1. Compensation Weights</h3>
+            <p>Monitors salary structures against standard market valuations to identify compensation-driven churn indicators.</p>
+        </div>
+        <div class="feature-card glass-card">
+            <h3>🎯 2. Career Progression</h3>
+            <p>Calculates velocity scores based on promotional intervals and specialized training track options.</p>
+        </div>
+        <div class="feature-card glass-card">
+            <h3>⚖️ 3. Work-Life Boundary</h3>
+            <p>Tracks burnout risk matrices based on extra project task allocations and structural overtime trends.</p>
+        </div>
+        <div class="feature-card glass-card">
+            <h3>🤝 4. Managerial Connection</h3>
+            <p>Applies satisfaction scores based on structured survey reviews and manager-to-subordinate dynamics.</p>
+        </div>
+    </div>
+</div>
+
+<style>
+    .info-viewport { max-width: 1100px; margin: 0 auto; padding: 5rem 1rem; color: #fff; font-family: sans-serif; }
+    .page-title-block { text-align: center; margin-bottom: 4rem; }
+    .sub-badge { display: inline-block; background: rgba(255,102,0,0.1); color: #ff6600; font-size: 0.8rem; font-weight: 700; padding: 0.3rem 0.8rem; border-radius: 4px; text-transform: uppercase; margin-bottom: 1rem; }
+    .page-title-block h2 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    .page-title-block p { color: #a0aec0; max-width: 600px; margin: 0 auto; line-height: 1.6; }
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 2rem; }
+    .feature-card { background: rgba(13,17,23,0.6); border: 1px solid rgba(255,255,255,0.06); padding: 2rem; border-radius: 12px; }
+    .feature-card h3 { font-size: 1.2rem; margin-bottom: 1rem; color: #ff6600; }
+    .feature-card p { color: #cbd5e0; font-size: 0.9rem; line-height: 1.6; }
+</style>
+{% endblock %}

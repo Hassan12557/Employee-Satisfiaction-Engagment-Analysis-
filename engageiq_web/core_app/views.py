@@ -159,3 +159,14 @@ def dashboard(request):
         'predicted_score': predicted_score,
         'history': history
     })
+def features_page(request):
+    """Renders the EngageIQ core model features breakdown page."""
+    return render(request, 'core_app/features.html')
+
+def analytics_page(request):
+    """Renders the descriptive systemic macro-analytics overview page."""
+    return render(request, 'core_app/analytics.html')
+
+def pricing_page(request):
+    """Renders corporate licensing tiers for the predictive matrix."""
+    return render(request, 'core_app/pricing.html')
