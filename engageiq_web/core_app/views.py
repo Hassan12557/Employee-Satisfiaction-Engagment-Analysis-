@@ -146,7 +146,7 @@ def dashboard(request):
 
     history = SatisfactionPrediction.objects.filter(user=request.user)
 
-    return render(request, 'core_app/dashboard.html', {
+    return render(request, 'core_app/Dashboard.html', {
         'form': form,
         'predicted_score': predicted_score,
         'history': history
