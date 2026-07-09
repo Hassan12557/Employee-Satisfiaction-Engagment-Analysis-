@@ -72,23 +72,27 @@ def landing_page(request):
 
 
 def register_user(request):
-    """Handles submission of registration details, rendering users inactive until verified."""
-    if request.method == 'POST':
-        # Assuming you're parsing a standard custom registration dashboard template form
-        username = request.POST.get('username')
-        email = request.POST.get('email')
-        password = request.POST.get('password')
+    """
+    Handles registration using the Django Form framework, keeping the
+    profile inactive until the secure OTP email verification clears.
+    """
+    initial_data = {}
+    session_email = request.session.get('trial_email', '')
+    if session_email:
+        initial_data['email'] = session_email
+        del request.session['trial_email']
 
-        if User.objects.filter(username=username).exists():
-            messages.error(request, "Username is already taken.")
-            return render(request, 'core_app/register.html')
+    # 🎯 FIX 1: Initialize the form with POST data or leave it blank on GET requests
+    form = HRRegistrationForm(request.POST or None, initial=initial_data)
 
-        # Create user but freeze authentication state
-        user = User.objects.create_user(username=username, email=email, password=password)
+    if request.method == 'POST' and form.is_valid():
+        # Build user object but freeze active authentication status
+        user = form.save(commit=False)
+        user.set_password(form.cleaned_data['password'])
         user.is_active = False
         user.save()
 
-        # Build OTP Matrix mapping
+        # Build secure OTP target mapping
         otp_string = f"{random.randint(100000, 999999)}"
         ProfileOTP.objects.create(user=user, otp_code=otp_string)
 
@@ -98,18 +102,19 @@ def register_user(request):
                 subject="EngageIQ Security - Account Activation Code",
                 message=f"Your secure 6-digit account registration authorization token is: {otp_string}\nThis code expires in 5 minutes.",
                 from_email=None,
-                recipient_list=[email],
+                recipient_list=[user.email],
                 fail_silently=False,
             )
-            # Cache the registration ID in session keys for multi-stage tracking
+            # Cache the registration ID in session keys for verification tracking
             request.session['verification_user_id'] = user.id
             return redirect('verify_otp')
+
         except Exception as e:
             messages.error(request, f"Email delivery failed: {str(e)}")
-            user.delete() # Roll back profile creation if network transmission cracks
+            user.delete()  # Roll back profile creation if network transmission cracks
 
-    return render(request, 'core_app/register.html')
-
+    # 🎯 FIX 2: Pass the form back to context so register.html renders valid inputs and IDs!
+    return render(request, 'core_app/register.html', {'form': form})
 
 def verify_otp(request):
     """Evaluates incoming token digits to activate user state parameters."""
