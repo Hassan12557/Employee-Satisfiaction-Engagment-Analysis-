@@ -68,7 +68,15 @@ def landing_page(request):
         request.session['visited_before'] = True  # Set flag so it doesn't spam them on every refresh
 
     return render(request, 'core_app/landing.html')
+
+
 def register_user(request):
+    """Handles secure corporate registration with duplicate checks and dynamic session management."""
+
+    # 🎯 UPGRADE 4: Site remembers who is logged in! Redirect them if they try to access register page again.
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+
     initial_data = {}
     session_email = request.session.get('trial_email', '')
     if session_email:
@@ -78,19 +86,48 @@ def register_user(request):
     form = HRRegistrationForm(request.POST or None, initial=initial_data)
 
     if request.method == 'POST':
+        # Extraction variables for immediate validation processing
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+
+        # 🎯 UPGRADE 3: Catch if username or email already exists before processing anything
+        if User.objects.filter(username=username).exists():
+            messages.error(request, "This username is already taken. Please choose another.")
+            return render(request, 'core_app/register.html', {'form': form})
+
+        if User.objects.filter(email=email).exists():
+            messages.error(request, "An account with this email address already exists. Try logging in.")
+            return render(request, 'core_app/register.html', {'form': form})
+
         if form.is_valid():
             user = form.save(commit=False)
             user.set_password(form.cleaned_data['password'])
-            user.is_active = False
+            user.is_active = False  # Hold verification gate active
             user.save()
 
             otp_string = f"{random.randint(100000, 999999)}"
             ProfileOTP.objects.create(user=user, otp_code=otp_string)
 
+            # 🎯 UPGRADE 1: Elegant Gmail Message Formatting Layout
+            email_subject = "EngageIQ App - Verify Your Account Identity"
+            email_body = (
+                "=========================================\n"
+                "               ENGAGEIQ APP              \n"
+                "=========================================\n\n"
+                f"Hello {user.username},\n\n"
+                "Thank you for registering. Your unique, secure account "
+                "activation token is generated below:\n\n"
+                f"          👉 VERIFICATION CODE: {otp_string} 👈\n\n"
+                "This token will expire in exactly 5 minutes.\n"
+                "Please enter this code on the verification screen to activate your profile.\n\n"
+                "-----------------------------------------\n"
+                "If you did not make this request, please disregard this transmission."
+            )
+
             try:
                 send_mail(
-                    subject="EngageIQ Security - Account Activation Code",
-                    message=f"Your secure 6-digit account registration authorization token is: {otp_string}",
+                    subject=email_subject,
+                    message=email_body,
                     from_email=None,
                     recipient_list=[user.email],
                     fail_silently=False,
@@ -100,16 +137,15 @@ def register_user(request):
 
             except Exception as e:
                 messages.error(request, f"Email delivery failed: {str(e)}")
-                user.delete()
+                user.delete()  # Clean database rollback
         else:
-            # 🎯 DIAGNOSTIC FIX: Print the exact validation errors to your black terminal screen!
             print("❌ FORM VALIDATION FAILED! Errors:", form.errors)
 
     return render(request, 'core_app/register.html', {'form': form})
 
 
 def verify_otp(request):
-    """Evaluates incoming token digits to activate user state parameters."""
+    """Validates the input token and dispatches an authentic corporate welcome package email."""
     user_id = request.session.get('verification_user_id')
     if not user_id:
         return redirect('register')
@@ -124,24 +160,52 @@ def verify_otp(request):
         entered_otp = request.POST.get('otp_input')
 
         if profile_otp.otp_code == entered_otp and profile_otp.is_valid():
+            # Activate and transition parameters
             user.is_active = True
             user.save()
             profile_otp.is_verified = True
             profile_otp.save()
 
             del request.session['verification_user_id']
+            login(request, user)  # Django drops a persistent session cookie here
 
-            login(request, user)
+            # 🎯 UPGRADE 2: Automated Welcome Email Package inside Gmail
+            welcome_subject = "Welcome to EngageIQ - Activation Successful! 🎉"
+            welcome_body = (
+                "=========================================\n"
+                "               ENGAGEIQ APP              \n"
+                "=========================================\n\n"
+                f"Welcome aboard, {user.username}!\n\n"
+                "Your identity has been fully verified, and your corporate predictive "
+                "analytics workspace is officially active.\n\n"
+                "🚀 What's next?\n"
+                "• Head to your Analytics Dashboard to calculate predictive models.\n"
+                "• Explore your real-time performance evaluation work matrices.\n\n"
+                "We are thrilled to have you with us on the platform.\n\n"
+                "Best regards,\n"
+                "The EngageIQ Engine Core Team"
+            )
 
-            # 🎯 WELCOME NOTIFICATION: Pops up beautifully right when they enter the dashboard
-            messages.success(request,
-                             f"Welcome to the team, {user.username}! Your identity has been successfully verified.")
+            try:
+                send_mail(
+                    subject=welcome_subject,
+                    message=welcome_body,
+                    from_email=None,
+                    recipient_list=[user.email],
+                    fail_silently=True,  # Set to True so user login isn't blocked if network hiccups here
+                )
+            except Exception:
+                pass
+
+            messages.success(request, "Account verified! Welcome to your predictive workspace.")
             return redirect('dashboard')
         else:
             messages.error(request, "Invalid or expired authorization credentials. Please try again.")
 
     return render(request, 'core_app/verify_otp.html', {'email': user.email})
 def login_user(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard')
     """
     Processes built-in secure HR manager session creation logins.
     """
