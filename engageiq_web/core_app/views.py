@@ -2,7 +2,11 @@ import numpy as np
 from pathlib import Path
 import joblib
 from typing import Any  # 🎯 Added for strict type analysis compliance
-
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+# NOTE: Assuming your model is pre-loaded at the app level or via a utility module.
+# Replace 'your_loaded_model' with the variable name representing your loaded .pkl file
+from core_app.apps import CoreAppConfig # Adjust this import depending on where your model is assigned
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
@@ -59,7 +63,52 @@ if ml_model is None:
 # -------------------------------------------------------------------------
 # VIEWS CONTROLLERS
 # -------------------------------------------------------------------------
+@csrf_exempt  # Allows external services (like Postman or a frontend JS script) to hit this endpoint safely
+def predict_satisfaction_api(request):
+    """
+    Production API Endpoint: Accepts raw feature matrices via JSON POST,
+    runs inference through the mounted regressor, and returns structural predictions.
+    """
+    if request.method != 'POST':
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Invalid request method. Only POST operations are authorized.'
+        }, status=405)
 
+    try:
+        # 1. Parse incoming JSON body payload
+        data = json.loads(request.body)
+
+        # 2. Map structural features (Update these keys to match your exact model features!)
+        # Example features: engagement_score, evaluation_score, average_monthly_hours, tenure
+        feature_mapping = {
+            'engagement_score': float(data.get('engagement_score', 0)),
+            'last_evaluation': float(data.get('last_evaluation', 0)),
+            'average_monthly_hours': int(data.get('average_monthly_hours', 160)),
+            'tenure_years': int(data.get('tenure_years', 1)),
+        }
+
+        # 3. Restructure payload into a DataFrame format matching your training configuration
+        input_dataframe = pd.DataFrame([feature_mapping])
+
+        # 4. Extract trained model component and run inference
+        model = getattr(CoreAppConfig, 'model', None)
+        if model is None:
+            return JsonResponse({'status': 'error', 'message': 'ML Engine model instance not found.'}, status=500)
+
+        prediction = model.predict(input_dataframe)[0]
+
+        # 5. Emit payload metrics back to the client
+        return JsonResponse({
+            'status': 'success',
+            'input_features': feature_mapping,
+            'predicted_satisfaction_index': round(float(prediction), 4)
+        }, status=200)
+
+    except ValueError as ve:
+        return JsonResponse({'status': 'error', 'message': f'Data type conversion error: {str(ve)}'}, status=400)
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': f'Internal engine breakdown: {str(e)}'}, status=500)
 def landing_page(request):
     """Renders the main platform gateway homepage with a welcome notification for visitors."""
     # Check if this is the visitor's first time loading the page this session

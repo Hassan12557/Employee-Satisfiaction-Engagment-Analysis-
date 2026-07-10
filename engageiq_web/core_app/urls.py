@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-
+from django.urls import path
 urlpatterns = [
     path('', views.landing_page, name='landing'),
     path('register/', views.register_user, name='register'),
@@ -11,4 +11,5 @@ urlpatterns = [
     path('features/', views.features_page, name='features'),
     path('analytics/', views.analytics_page, name='analytics'),
     path('pricing/', views.pricing_page, name='pricing'),
+    path('api/predict-satisfaction/', views.predict_satisfaction_api, name='api_predict_satisfaction'),
 ]
