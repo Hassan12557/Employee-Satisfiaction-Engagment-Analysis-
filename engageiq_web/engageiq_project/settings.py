@@ -115,13 +115,22 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
-
+# ==============================================================================
+# SECURE EMAIL SMTP GATEWAY SUBSYSTEM
+# ==============================================================================
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-# ⚠️ Make sure these are your real, authenticated details:
-EMAIL_HOST_USER = 'your_real_email@gmail.com'
-EMAIL_HOST_PASSWORD = 'xxxx xxxx xxxx xxxx'  # 🌟 Your 16-digit Google App Password
+# 🎯 THE FIX: Ensure these match your newly authorized Google Token data
+EMAIL_HOST_USER = 'your_exact_email@gmail.com'  # Must be the exact account that made the token
+EMAIL_HOST_PASSWORD = 'abcdefghijklmnop'       # 🌟 Paste the 16-digit code WITHOUT spaces
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/stable/howto/static-files/
+
+STATIC_URL = '/static/'
+
+# Optional but recommended: tells Django where to find global static assets
+# STATICFILES_DIRS = [BASE_DIR / "static"]
