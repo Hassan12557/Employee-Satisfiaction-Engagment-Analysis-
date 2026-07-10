@@ -22,6 +22,7 @@ from django.contrib import messages
 from django.contrib.auth import login
 from .models import ProfileOTP
 import random
+from django.contrib import messages
 import json
 # -------------------------------------------------------------------------
 # ML ENGINE LOADER (Robust Path Resolving using Pathlib)
@@ -60,17 +61,13 @@ if ml_model is None:
 # -------------------------------------------------------------------------
 
 def landing_page(request):
-    """
-    Renders the premium dark-grid hero landing page layout.
-    """
-    trial_email = request.GET.get('trial_email', '')
-    if trial_email:
-        request.session['trial_email'] = trial_email
-        return redirect('register')
+    """Renders the main platform gateway homepage with a welcome notification for visitors."""
+    # Check if this is the visitor's first time loading the page this session
+    if not request.session.get('visited_before', False):
+        messages.info(request, "Welcome to EngageIQ! Explore our corporate predictive workspace.")
+        request.session['visited_before'] = True  # Set flag so it doesn't spam them on every refresh
 
     return render(request, 'core_app/landing.html')
-
-
 def register_user(request):
     initial_data = {}
     session_email = request.session.get('trial_email', '')
@@ -109,6 +106,8 @@ def register_user(request):
             print("❌ FORM VALIDATION FAILED! Errors:", form.errors)
 
     return render(request, 'core_app/register.html', {'form': form})
+
+
 def verify_otp(request):
     """Evaluates incoming token digits to activate user state parameters."""
     user_id = request.session.get('verification_user_id')
@@ -125,23 +124,23 @@ def verify_otp(request):
         entered_otp = request.POST.get('otp_input')
 
         if profile_otp.otp_code == entered_otp and profile_otp.is_valid():
-            # Activate account state parameters permanently
             user.is_active = True
             user.save()
             profile_otp.is_verified = True
             profile_otp.save()
 
-            # Clean session caching indicators
             del request.session['verification_user_id']
 
             login(request, user)
-            messages.success(request, "Account validated successfully! Welcome to EngageIQ.")
+
+            # 🎯 WELCOME NOTIFICATION: Pops up beautifully right when they enter the dashboard
+            messages.success(request,
+                             f"Welcome to the team, {user.username}! Your identity has been successfully verified.")
             return redirect('dashboard')
         else:
             messages.error(request, "Invalid or expired authorization credentials. Please try again.")
 
     return render(request, 'core_app/verify_otp.html', {'email': user.email})
-
 def login_user(request):
     """
     Processes built-in secure HR manager session creation logins.

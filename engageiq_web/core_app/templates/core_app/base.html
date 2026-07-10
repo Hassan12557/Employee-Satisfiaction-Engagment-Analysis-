@@ -8,6 +8,41 @@
     <link rel="stylesheet" href="{% static 'core_app/css/style.css' %}">
 </head>
 <body>
+{% if messages %}
+    <div id="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px;">
+        {% for message in messages %}
+            <div class="toast-card {% if message.tags %}toast-{{ message.tags }}{% endif %}" style="background: rgba(18, 24, 38, 0.95); border-left: 4px solid #ff6600; border-top: 1px solid rgba(255,255,255,0.1); border-bottom: 1px solid rgba(255,255,255,0.1); border-right: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 1rem 1.5rem; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); min-width: 300px; display: flex; align-items: center; justify-content: space-between; font-family: sans-serif; animation: slideIn 0.3s ease forwards;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 1.2rem;">✨</span>
+                    <span style="font-size: 0.95rem; font-weight: 500;">{{ message }}</span>
+                </div>
+                <button onclick="this.parentElement.remove()" style="background: none; border: none; color: #a0aec0; cursor: pointer; font-size: 1.1rem; padding: 0 0 0 10px;">&times;</button>
+            </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        // Automatically fade out notifications after 5 seconds
+        setTimeout(() => {
+            const container = document.getElementById('toast-container');
+            if (container) {
+                container.style.transition = 'opacity 0.5s ease';
+                container.style.opacity = '0';
+                setTimeout(() => container.remove(), 500);
+            }
+        }, 5000);
+    </script>
+
+    <style>
+        @keyframes slideIn {
+            from { transform: translateX(120%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .toast-success { border-left-color: #48bb78 !important; }
+        .toast-error { border-left-color: #f56565 !important; }
+        .toast-info { border-left-color: #ff6600 !important; }
+    </style>
+{% endif %}
 
     <nav class="nav-container">
         <a href="{% url 'landing' %}" class="brand-logo">Engage<span>IQ</span></a>
