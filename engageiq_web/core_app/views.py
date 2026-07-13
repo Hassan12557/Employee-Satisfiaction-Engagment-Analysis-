@@ -34,13 +34,103 @@ import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from core_app.apps import CoreAppConfig
+from django.apps import apps #
+from django.conf import settings
+import pickle
+
+# A global fallback cache variable inside this module
+_MANUAL_MODEL_CACHE = None
+
+
+@csrf_exempt
+def predict_satisfaction_api(request):
+    """
+    Production API Endpoint: Accepts raw feature matrices via JSON POST,
+    runs inference using Django app configuration OR a direct disk fallback loop.
+    """
+    global _MANUAL_MODEL_CACHE
+
+    if request.method != 'POST':
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Invalid request method. Only POST operations are authorized.'
+        }, status=405)
+
+    try:
+        # 1. Parse incoming JSON body payload
+        data = json.loads(request.body)
+
+        feature_mapping = {
+            'engagement_score': float(data.get('engagement_score', 0)),
+            'last_evaluation': float(data.get('last_evaluation', 0)),
+            'average_monthly_hours': int(data.get('average_monthly_hours', 160)),
+            'tenure_years': int(data.get('tenure_years', 1)),
+        }
+
+        input_dataframe = pd.DataFrame([feature_mapping])
+
+        # 2. STRATEGY A: Attempt to pull the model from the live Django App Config
+        model = None
+        try:
+            app_config = apps.get_app_config('core_app')
+            model = getattr(app_config, 'model', None)
+        except Exception:
+            pass
+
+        # 3. STRATEGY B: Check if we already manually cached it here
+        if model is None:
+            model = _MANUAL_MODEL_CACHE
+
+        # 4. STRATEGY C: Self-healing loader (Read straight from your disk layout)
+        if model is None:
+            # Reconstruct the exact path shown in your terminal logs relative to BASE_DIR
+            model_path = os.path.abspath(
+                os.path.join(settings.BASE_DIR, '..', 'src', 'saved_models', 'satisfaction_regressor.pkl'))
+
+            if os.path.exists(model_path):
+                try:
+                    # Attempt loading via standard pickle binary streams
+                    with open(model_path, 'rb') as f:
+                        _MANUAL_MODEL_CACHE = pickle.load(f)
+                    model = _MANUAL_MODEL_CACHE
+                except Exception:
+                    # Alternative fallback if your model was serialized using joblib
+                    import joblib
+                    _MANUAL_MODEL_CACHE = joblib.load(model_path)
+                    model = _MANUAL_MODEL_CACHE
+            else:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': f'ML Engine model file could not be found on disk at: {model_path}'
+                }, status=500)
+
+        # 5. Run Machine Learning Inference
+        prediction = model.predict(input_dataframe)[0]
+
+        # 6. Log the metrics locally to your personal Excel sheet
+        try:
+            log_prediction_to_excel(feature_mapping, prediction)
+        except Exception:
+            pass  # Keep going even if the excel sheet is currently open on your desktop
+
+        # 7. Return successful predictions matrix
+        return JsonResponse({
+            'status': 'success',
+            'input_features': feature_mapping,
+            'predicted_satisfaction_index': round(float(prediction), 4)
+        }, status=200)
+
+    except ValueError as ve:
+        return JsonResponse({'status': 'error', 'message': f'Data type conversion error: {str(ve)}'}, status=400)
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': f'Internal engine breakdown: {str(e)}'}, status=500)
 def log_prediction_to_excel(feature_mapping, prediction_result):
     """
     Appends incoming model features and output inferences to a local CSV log matrix.
     This file creates automatically and opens perfectly inside Microsoft Excel.
     """
     # Define the absolute target layout path
-    file_path = 'User data\personal_prediction_logs.csv'
+    file_path = 'personal_prediction_logs.csv'
     file_exists = os.path.isfile(file_path)
 
     # 1. Structure the data row with a master timestamp tracker
@@ -87,52 +177,7 @@ if ml_model is None:
 # -------------------------------------------------------------------------
 # VIEWS CONTROLLERS
 # -------------------------------------------------------------------------
-@csrf_exempt  # Allows external services (like Postman or a frontend JS script) to hit this endpoint safely
-def predict_satisfaction_api(request):
-    """
-    Production API Endpoint: Accepts raw feature matrices via JSON POST,
-    runs inference through the mounted regressor, and returns structural predictions.
-    """
-    if request.method != 'POST':
-        return JsonResponse({
-            'status': 'error',
-            'message': 'Invalid request method. Only POST operations are authorized.'
-        }, status=405)
 
-    try:
-        # 1. Parse incoming JSON body payload
-        data = json.loads(request.body)
-
-        # 2. Map structural features (Update these keys to match your exact model features!)
-        # Example features: engagement_score, evaluation_score, average_monthly_hours, tenure
-        feature_mapping = {
-            'engagement_score': float(data.get('engagement_score', 0)),
-            'last_evaluation': float(data.get('last_evaluation', 0)),
-            'average_monthly_hours': int(data.get('average_monthly_hours', 160)),
-            'tenure_years': int(data.get('tenure_years', 1)),
-        }
-
-        # 3. Restructure payload into a DataFrame format matching your training configuration
-        input_dataframe = pd.DataFrame([feature_mapping])
-
-        # 4. Extract trained model component and run inference
-        model = getattr(CoreAppConfig, 'model', None)
-        if model is None:
-            return JsonResponse({'status': 'error', 'message': 'ML Engine model instance not found.'}, status=500)
-
-        prediction = model.predict(input_dataframe)[0]
-
-        # 5. Emit payload metrics back to the client
-        return JsonResponse({
-            'status': 'success',
-            'input_features': feature_mapping,
-            'predicted_satisfaction_index': round(float(prediction), 4)
-        }, status=200)
-
-    except ValueError as ve:
-        return JsonResponse({'status': 'error', 'message': f'Data type conversion error: {str(ve)}'}, status=400)
-    except Exception as e:
-        return JsonResponse({'status': 'error', 'message': f'Internal engine breakdown: {str(e)}'}, status=500)
 def landing_page(request):
     """Renders the main platform gateway homepage with a welcome notification for visitors."""
     # Check if this is the visitor's first time loading the page this session
