@@ -61,10 +61,10 @@ def predict_satisfaction_api(request):
         data = json.loads(request.body)
 
         feature_mapping = {
-            'engagement_score': float(data.get('engagement_score', 0)),
-            'last_evaluation': float(data.get('last_evaluation', 0)),
-            'average_monthly_hours': int(data.get('average_monthly_hours', 160)),
-            'tenure_years': int(data.get('tenure_years', 1)),
+            'Career_Progression': float(data.get('Career_Progression', 3.0)),
+            'Compensation': float(data.get('Compensation', 3.0)),
+            'Manager_Relationship': float(data.get('Manager_Relationship', 3.0)),
+            'Work_Life_Balance': float(data.get('Work_Life_Balance', 3.0)),
         }
 
         input_dataframe = pd.DataFrame([feature_mapping])

@@ -6,10 +6,10 @@ url = "http://127.0.0.1:8000/api/predict-satisfaction/"
 
 # Sample employee record parameters to feed to your Random Forest model
 payload = {
-    "engagement_score": 4.2,
-    "last_evaluation": 3.8,
-    "average_monthly_hours": 175,
-    "tenure_years": 3
+    "Career_Progression": 4.2,
+    "Compensation": 3.8,
+    "Manager_Relationship": 4.5,
+    "Work_Life_Balance": 3.9
 }
 
 headers = {
