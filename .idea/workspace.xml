@@ -2,8 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="704481fc-d141-4245-9a61-41f287021c26" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.name" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.name" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/Employee-Satisfaction-Engagement-Analysis.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Employee-Satisfaction-Engagement-Analysis.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -14,9 +12,9 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Python Script" />
         <option value="CSS File" />
         <option value="HTML File" />
+        <option value="Python Script" />
       </list>
     </option>
   </component>
@@ -110,7 +108,8 @@
       <workItem from="1783668809338" duration="1101000" />
       <workItem from="1783680121479" duration="2898000" />
       <workItem from="1783685204700" duration="912000" />
-      <workItem from="1783943162346" duration="363000" />
+      <workItem from="1783943162346" duration="3124000" />
+      <workItem from="1783966053239" duration="2220000" />
     </task>
     <servers />
   </component>
