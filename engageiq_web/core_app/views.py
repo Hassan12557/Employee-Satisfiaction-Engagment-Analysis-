@@ -1,6 +1,8 @@
+import os
 import numpy as np
 from pathlib import Path
 import joblib
+import pandas as pd
 from typing import Any  # 🎯 Added for strict type analysis compliance
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -12,7 +14,8 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
-
+import csv
+from datetime import datetime
 from .forms import HRRegistrationForm, EngagementSlidersForm
 from .models import SatisfactionPrediction
 from django.db.models import Avg, Count
@@ -28,6 +31,27 @@ from .models import ProfileOTP
 import random
 from django.contrib import messages
 import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from core_app.apps import CoreAppConfig
+def log_prediction_to_excel(feature_mapping, prediction_result):
+    """
+    Appends incoming model features and output inferences to a local CSV log matrix.
+    This file creates automatically and opens perfectly inside Microsoft Excel.
+    """
+    # Define the absolute target layout path
+    file_path = 'User data\personal_prediction_logs.csv'
+    file_exists = os.path.isfile(file_path)
+
+    # 1. Structure the data row with a master timestamp tracker
+    log_row = {
+        'Timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        'Engagement_Score': feature_mapping.get('engagement_score'),
+        'Last_Evaluation': feature_mapping.get('last_evaluation'),
+        'Average_Monthly_Hours': feature_mapping.get('average_monthly_hours'),
+        'Tenure_Years': feature_mapping.get('tenure_years'),
+        'Predicted_Satisfaction_Index': round(float(prediction_result), 4)
+    }
 # -------------------------------------------------------------------------
 # ML ENGINE LOADER (Robust Path Resolving using Pathlib)
 # -------------------------------------------------------------------------
