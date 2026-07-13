@@ -39,7 +39,57 @@ from django.conf import settings
 import pickle
 #
 # # A global fallback cache variable inside this module
-# _MANUAL_MODEL_CACHE = None
+def log_prediction_to_excel(feature_mapping, prediction_result):
+    """
+    Appends incoming model features and output inferences to a local CSV log matrix.
+    This file creates automatically and opens perfectly inside Microsoft Excel.
+    """
+    # Define the absolute target layout path
+    file_path = 'personal_prediction_logs.csv'
+    file_exists = os.path.isfile(file_path)
+
+    # 1. Structure the data row with a master timestamp tracker
+    log_row = {
+        'Timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        'Engagement_Score': feature_mapping.get('engagement_score'),
+        'Last_Evaluation': feature_mapping.get('last_evaluation'),
+        'Average_Monthly_Hours': feature_mapping.get('average_monthly_hours'),
+        'Tenure_Years': feature_mapping.get('tenure_years'),
+        'Predicted_Satisfaction_Index': round(float(prediction_result), 4)
+    }
+# -------------------------------------------------------------------------
+# ML ENGINE LOADER (Robust Path Resolving using Pathlib)
+# -------------------------------------------------------------------------
+MODEL_FILENAME = 'satisfaction_regressor.pkl'
+
+# 🎯 Hinting ': Any' tells the IDE linter that this can become a Scikit-Learn model object
+ml_model: Any = None
+
+# Resolve current file's directory cleanly
+CURRENT_DIR = Path(__file__).resolve().parent
+
+# Search paths using safe path arithmetic operators
+possible_paths = [
+    CURRENT_DIR / '..' / '..' / 'saved_models' / MODEL_FILENAME,
+    CURRENT_DIR / '..' / '..' / 'src' / 'saved_models' / MODEL_FILENAME,
+    CURRENT_DIR / '..' / 'saved_models' / MODEL_FILENAME,
+]
+
+for path in possible_paths:
+    if path.exists():  # Standard Pathlib check
+        try:
+            # Convert Path object back to a clean string format for joblib compatibility
+            ml_model = joblib.load(str(path.resolve()))
+            print(f"🏽 EngageIQ ML Engine loaded successfully from: {path}")
+            break
+        except Exception as e:
+            print(f"⚠️ Failed to load model at {path}: {e}")
+
+if ml_model is None:
+    print("❌ CRITICAL: satisfaction_regressor.pkl not found. Please verify your Phase 1 output path.")
+
+
+_MANUAL_MODEL_CACHE = None
 
 
 @csrf_exempt
@@ -134,55 +184,55 @@ def predict_satisfaction_api(request):
         return JsonResponse({'status': 'error', 'message': f'Internal engine breakdown: {str(e)}'}, status=500)
 
 
-def log_prediction_to_excel(feature_mapping, prediction_result):
-    """
-    Appends incoming model features and output inferences to a local CSV log matrix.
-    This file creates automatically and opens perfectly inside Microsoft Excel.
-    """
-    # Define the absolute target layout path
-    file_path = 'personal_prediction_logs.csv'
-    file_exists = os.path.isfile(file_path)
-
-    # 1. Structure the data row with a master timestamp tracker
-    log_row = {
-        'Timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-        'Engagement_Score': feature_mapping.get('engagement_score'),
-        'Last_Evaluation': feature_mapping.get('last_evaluation'),
-        'Average_Monthly_Hours': feature_mapping.get('average_monthly_hours'),
-        'Tenure_Years': feature_mapping.get('tenure_years'),
-        'Predicted_Satisfaction_Index': round(float(prediction_result), 4)
-    }
-# -------------------------------------------------------------------------
-# ML ENGINE LOADER (Robust Path Resolving using Pathlib)
-# -------------------------------------------------------------------------
-MODEL_FILENAME = 'satisfaction_regressor.pkl'
-
-# 🎯 Hinting ': Any' tells the IDE linter that this can become a Scikit-Learn model object
-ml_model: Any = None
-
-# Resolve current file's directory cleanly
-CURRENT_DIR = Path(__file__).resolve().parent
-
-# Search paths using safe path arithmetic operators
-possible_paths = [
-    CURRENT_DIR / '..' / '..' / 'saved_models' / MODEL_FILENAME,
-    CURRENT_DIR / '..' / '..' / 'src' / 'saved_models' / MODEL_FILENAME,
-    CURRENT_DIR / '..' / 'saved_models' / MODEL_FILENAME,
-]
-
-for path in possible_paths:
-    if path.exists():  # Standard Pathlib check
-        try:
-            # Convert Path object back to a clean string format for joblib compatibility
-            ml_model = joblib.load(str(path.resolve()))
-            print(f"🏽 EngageIQ ML Engine loaded successfully from: {path}")
-            break
-        except Exception as e:
-            print(f"⚠️ Failed to load model at {path}: {e}")
-
-if ml_model is None:
-    print("❌ CRITICAL: satisfaction_regressor.pkl not found. Please verify your Phase 1 output path.")
-
+# def log_prediction_to_excel(feature_mapping, prediction_result):
+#     """
+#     Appends incoming model features and output inferences to a local CSV log matrix.
+#     This file creates automatically and opens perfectly inside Microsoft Excel.
+#     """
+#     # Define the absolute target layout path
+#     file_path = 'personal_prediction_logs.csv'
+#     file_exists = os.path.isfile(file_path)
+#
+#     # 1. Structure the data row with a master timestamp tracker
+#     log_row = {
+#         'Timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+#         'Engagement_Score': feature_mapping.get('engagement_score'),
+#         'Last_Evaluation': feature_mapping.get('last_evaluation'),
+#         'Average_Monthly_Hours': feature_mapping.get('average_monthly_hours'),
+#         'Tenure_Years': feature_mapping.get('tenure_years'),
+#         'Predicted_Satisfaction_Index': round(float(prediction_result), 4)
+#     }
+# # -------------------------------------------------------------------------
+# # ML ENGINE LOADER (Robust Path Resolving using Pathlib)
+# # -------------------------------------------------------------------------
+# MODEL_FILENAME = 'satisfaction_regressor.pkl'
+#
+# # 🎯 Hinting ': Any' tells the IDE linter that this can become a Scikit-Learn model object
+# ml_model: Any = None
+#
+# # Resolve current file's directory cleanly
+# CURRENT_DIR = Path(__file__).resolve().parent
+#
+# # Search paths using safe path arithmetic operators
+# possible_paths = [
+#     CURRENT_DIR / '..' / '..' / 'saved_models' / MODEL_FILENAME,
+#     CURRENT_DIR / '..' / '..' / 'src' / 'saved_models' / MODEL_FILENAME,
+#     CURRENT_DIR / '..' / 'saved_models' / MODEL_FILENAME,
+# ]
+#
+# for path in possible_paths:
+#     if path.exists():  # Standard Pathlib check
+#         try:
+#             # Convert Path object back to a clean string format for joblib compatibility
+#             ml_model = joblib.load(str(path.resolve()))
+#             print(f"🏽 EngageIQ ML Engine loaded successfully from: {path}")
+#             break
+#         except Exception as e:
+#             print(f"⚠️ Failed to load model at {path}: {e}")
+#
+# if ml_model is None:
+#     print("❌ CRITICAL: satisfaction_regressor.pkl not found. Please verify your Phase 1 output path.")
+#
 
 # -------------------------------------------------------------------------
 # VIEWS CONTROLLERS
