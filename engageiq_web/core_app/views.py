@@ -37,16 +37,17 @@ from core_app.apps import CoreAppConfig
 from django.apps import apps #
 from django.conf import settings
 import pickle
-
-# A global fallback cache variable inside this module
-_MANUAL_MODEL_CACHE = None
+#
+# # A global fallback cache variable inside this module
+# _MANUAL_MODEL_CACHE = None
 
 
 @csrf_exempt
 def predict_satisfaction_api(request):
     """
     Production API Endpoint: Accepts raw feature matrices via JSON POST,
-    runs inference using Django app configuration OR a direct disk fallback loop.
+    automatically resolves file paths, dynamically reorders column schemas,
+    logs results to an Excel CSV sheet, and returns the live ML inference.
     """
     global _MANUAL_MODEL_CACHE
 
@@ -60,6 +61,7 @@ def predict_satisfaction_api(request):
         # 1. Parse incoming JSON body payload
         data = json.loads(request.body)
 
+        # 2. Map structural features to match model expectations
         feature_mapping = {
             'Career_Progression': float(data.get('Career_Progression', 3.0)),
             'Compensation': float(data.get('Compensation', 3.0)),
@@ -69,51 +71,57 @@ def predict_satisfaction_api(request):
 
         input_dataframe = pd.DataFrame([feature_mapping])
 
-        # 2. STRATEGY A: Attempt to pull the model from the live Django App Config
-        model = None
-        try:
-            app_config = apps.get_app_config('core_app')
-            model = getattr(app_config, 'model', None)
-        except Exception:
-            pass
+        # 3. Secure the Model Instance (Memory Cache Check)
+        model = _MANUAL_MODEL_CACHE
 
-        # 3. STRATEGY B: Check if we already manually cached it here
+        # 4. Smart Path Loader Fallback Loop
         if model is None:
-            model = _MANUAL_MODEL_CACHE
+            # Check the most probable locations across your local folder architecture
+            possible_paths = [
+                os.path.abspath(
+                    os.path.join(settings.BASE_DIR, '..', 'src', 'saved_models', 'satisfaction_regressor.pkl')),
+                os.path.abspath(os.path.join(settings.BASE_DIR, 'saved_models', 'satisfaction_regressor.pkl')),
+                os.path.abspath(os.path.join(settings.BASE_DIR, 'satisfaction_regressor.pkl')),
+            ]
 
-        # 4. STRATEGY C: Self-healing loader (Read straight from your disk layout)
-        if model is None:
-            # Reconstruct the exact path shown in your terminal logs relative to BASE_DIR
-            model_path = os.path.abspath(
-                os.path.join(settings.BASE_DIR, '..', 'src', 'saved_models', 'satisfaction_regressor.pkl'))
+            chosen_path = None
+            for path in possible_paths:
+                if os.path.exists(path):
+                    chosen_path = path
+                    break
 
-            if os.path.exists(model_path):
+            if chosen_path:
                 try:
-                    # Attempt loading via standard pickle binary streams
-                    with open(model_path, 'rb') as f:
+                    # Attempt reading binary stream via standard pickle
+                    with open(chosen_path, 'rb') as f:
                         _MANUAL_MODEL_CACHE = pickle.load(f)
                     model = _MANUAL_MODEL_CACHE
                 except Exception:
-                    # Alternative fallback if your model was serialized using joblib
+                    # Alternative loading vector if model was saved using joblib
                     import joblib
-                    _MANUAL_MODEL_CACHE = joblib.load(model_path)
+                    _MANUAL_MODEL_CACHE = joblib.load(chosen_path)
                     model = _MANUAL_MODEL_CACHE
             else:
                 return JsonResponse({
                     'status': 'error',
-                    'message': f'ML Engine model file could not be found on disk at: {model_path}'
+                    'message': f'ML Engine model file could not be found on disk. Searched paths: {possible_paths}'
                 }, status=500)
 
-        # 5. Run Machine Learning Inference
+        # 5. 🎯 DYNAMIC COLUMN ALIGNMENT SHIELD
+        # Safely reads scikit-learn properties and matches the exact training notebook layout order
+        if hasattr(model, 'feature_names_in_'):
+            input_dataframe = input_dataframe[model.feature_names_in_]
+
+        # 6. Execute live Machine Learning Prediction
         prediction = model.predict(input_dataframe)[0]
 
-        # 6. Log the metrics locally to your personal Excel sheet
+        # 7. Log metrics securely to your private personal sheet
         try:
             log_prediction_to_excel(feature_mapping, prediction)
         except Exception:
-            pass  # Keep going even if the excel sheet is currently open on your desktop
+            pass
 
-        # 7. Return successful predictions matrix
+            # 8. Emit structured calculation payload back to client
         return JsonResponse({
             'status': 'success',
             'input_features': feature_mapping,
@@ -124,6 +132,8 @@ def predict_satisfaction_api(request):
         return JsonResponse({'status': 'error', 'message': f'Data type conversion error: {str(ve)}'}, status=400)
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': f'Internal engine breakdown: {str(e)}'}, status=500)
+
+
 def log_prediction_to_excel(feature_mapping, prediction_result):
     """
     Appends incoming model features and output inferences to a local CSV log matrix.
