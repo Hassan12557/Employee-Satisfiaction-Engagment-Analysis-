@@ -20,8 +20,9 @@ RUN pip install --no-cache-dir --upgrade pip && \
 
 # 6. Copy your entire Django project code into the container
 COPY . /app/
-# Change the exposed port to 7860
-EXPOSE 7860
 
-# Change the runserver port to 0.0.0.0:7860
-CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:7860"]
+# 7. Expose the communication port (Django default is 8000)
+EXPOSE 8000
+
+# 8. Start the application server inside the container environment
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
