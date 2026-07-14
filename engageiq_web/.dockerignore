@@ -2,6 +2,5 @@
 venv/
 __pycache__/
 *.pyc
-db.sqlite3
 personal_prediction_logs.csv
 test_api.py
