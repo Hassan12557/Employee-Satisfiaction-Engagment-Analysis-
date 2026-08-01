@@ -138,3 +138,15 @@ STATIC_URL = '/static/'
 
 # Optional but recommended: tells Django where to find global static assets
 # STATICFILES_DIRS = [BASE_DIR / "static"]
+# Tell Django it is running behind Back4app's HTTPS reverse proxy
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Configure session and CSRF cookies for production HTTPS
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SAMESITE = 'Lax'
+
+# Specify default login/logout redirects
+LOGIN_REDIRECT_URL = '/dashboard/'
+LOGOUT_REDIRECT_URL = '/'
