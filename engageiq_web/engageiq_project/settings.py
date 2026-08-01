@@ -128,6 +128,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'muhammadhassan659@gmail.com'
+EMAIL_HOST_PASSWORD = 'kahj woqc aled lgka'
 
 # 🎯 THE FIX: Ensure these match your newly authorized Google Token data
 EMAIL_HOST_USER = 'enageg_satistifcation system'  # Must be the exact account that made the token
