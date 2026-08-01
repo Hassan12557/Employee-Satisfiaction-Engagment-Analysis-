@@ -122,7 +122,9 @@ USE_TZ = True
 # ==============================================================================
 # SECURE EMAIL SMTP GATEWAY SUBSYSTEM
 # ==============================================================================
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# Print outgoing emails to the server console instead of sending via SMTP
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
