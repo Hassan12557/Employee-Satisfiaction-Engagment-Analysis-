@@ -449,7 +449,7 @@ def dashboard(request):
     # 🎯 FIX 2: Changed 'hr_manager' to 'user' so Django can find the column instantly!
     history = SatisfactionPrediction.objects.filter(user=request.user)
 
-    return render(request, 'core_app/templates/core_app/dashboard.html', {
+    return render(request, 'core_app/dashboard.html', {
         'form': form,
         'predicted_score': predicted_score,
         'history': history

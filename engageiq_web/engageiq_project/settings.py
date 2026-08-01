@@ -28,7 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 # Tell Django to trust your live Back4app domain for form submissions
 CSRF_TRUSTED_ORIGINS = [
-    'https://engageiqanalytics-yl1isepm.b4a.run',
+    'https://engageiqanalytics-cifkt18w.b4a.run',
     'https://*.b4a.run',
 ]
 
