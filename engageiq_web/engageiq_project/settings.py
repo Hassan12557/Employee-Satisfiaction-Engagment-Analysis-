@@ -128,7 +128,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
 # 🎯 THE FIX: Ensure these match your newly authorized Google Token data
-EMAIL_HOST_USER = 'techtalkwithhassanraza@gmail.com'  # Must be the exact account that made the token
+EMAIL_HOST_USER = 'enageg_satistifcation system'  # Must be the exact account that made the token
 EMAIL_HOST_PASSWORD = 'zysqfwasxtcncmks'       # 🌟 Paste the 16-digit code WITHOUT spaces
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 # Static files (CSS, JavaScript, Images)
