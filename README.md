@@ -57,6 +57,8 @@ This project bridges the gap between machine learning model exploration and full
 * Constructed a robust, multi-layered `Dockerfile` using `python:3.11-slim` to minimize the image footprint and enforce environmental parity.
 * **The 256MB RAM Hack:** To deploy on a free cloud tier with strict memory limits, Django’s development auto-reloader was disabled using the `--noreload` flag. This single optimization cut the application’s operating RAM footprint in half, preventing Out-of-Memory (OOM) server crashes!
 
+here is snapshot
+ <img width="1344" height="643" alt="1" src="https://github.com/user-attachments/assets/9d8593b2-652a-4423-9d1c-585af117caf6" />
 ---
 
 ## 💻 Local Setup & Installation
@@ -85,5 +87,3 @@ Environment Independence: Achieved zero variance between local development and c
 Low-Footprint Design: Handled strict hardware constraints by removing local python compiler overhead and managing caching during build stages.
 
 Stateless Portability: Designed self-healing Django database migration pathways that execute cleanly upon container launch.
-here is snapshot
- <img width="1344" height="643" alt="1" src="https://github.com/user-attachments/assets/9d8593b2-652a-4423-9d1c-585af117caf6" />
