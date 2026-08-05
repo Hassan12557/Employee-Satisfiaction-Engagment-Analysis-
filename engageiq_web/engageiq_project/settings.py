@@ -124,14 +124,19 @@ USE_TZ = True
 # ==============================================================================
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # Print outgoing emails to the server console instead of sending via SMTP
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# Enable live SMTP email delivery to real inboxes
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'muhammadhassan659@gmail.com'
-EMAIL_HOST_PASSWORD = 'prtn kagl muok sgzi'
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
+# Must match the exact Gmail account that generated the App Password
+EMAIL_HOST_USER = 'muhammadhassanraza659@gmail.com'
+
+# Remove spaces from your 16-character App Password
+EMAIL_HOST_PASSWORD = 'prtnkaglmuoksgzi'
+
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 # 🎯 THE FIX: Ensure these match your newly authorized Google Token data
 # EMAIL_HOST_USER = 'enageg_satistifcation system'  # Must be the exact account that made the token
 # EMAIL_HOST_PASSWORD = 'zysqfwasxtcncmks'       # 🌟 Paste the 16-digit code WITHOUT spaces
