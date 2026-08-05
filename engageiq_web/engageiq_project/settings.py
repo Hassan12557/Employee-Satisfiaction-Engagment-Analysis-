@@ -129,7 +129,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'muhammadhassan659@gmail.com'
-EMAIL_HOST_PASSWORD = 'kahj woqc aled lgka'
+EMAIL_HOST_PASSWORD = 'prtn kagl muok sgzi'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # 🎯 THE FIX: Ensure these match your newly authorized Google Token data
