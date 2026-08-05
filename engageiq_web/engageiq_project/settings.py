@@ -130,11 +130,11 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'muhammadhassan659@gmail.com'
 EMAIL_HOST_PASSWORD = 'kahj woqc aled lgka'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # 🎯 THE FIX: Ensure these match your newly authorized Google Token data
-EMAIL_HOST_USER = 'enageg_satistifcation system'  # Must be the exact account that made the token
-EMAIL_HOST_PASSWORD = 'zysqfwasxtcncmks'       # 🌟 Paste the 16-digit code WITHOUT spaces
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+# EMAIL_HOST_USER = 'enageg_satistifcation system'  # Must be the exact account that made the token
+# EMAIL_HOST_PASSWORD = 'zysqfwasxtcncmks'       # 🌟 Paste the 16-digit code WITHOUT spaces
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/stable/howto/static-files/
 
