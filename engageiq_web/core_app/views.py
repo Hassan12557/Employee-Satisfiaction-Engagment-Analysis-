@@ -39,6 +39,45 @@ from django.conf import settings
 import pickle
 #
 # # A global fallback cache variable inside this module
+def resend_verification_code(request):
+    # Retrieve the user ID from the session stored during registration
+    user_id = request.session.get('pending_user_id')
+    
+    if not user_id:
+        messages.error(request, "Session expired. Please sign up or log in again.")
+        return redirect('signup')
+
+    try:
+        user = User.objects.get(id=user_id)
+        
+        # Generate a new random 6-digit verification code
+        new_code = str(random.randint(100000, 999999))
+        
+        # Save the new code (adjust 'profile' to your actual Profile/User field)
+        if hasattr(user, 'profile'):
+            user.profile.verification_code = new_code
+            user.profile.save()
+        else:
+            request.session['verification_code'] = new_code
+
+        # Attempt to send the email safely
+        try:
+            send_mail(
+                subject='Your New EngageIQ Verification Code',
+                message=f'Hello {user.username},\n\nYour new verification code is: {new_code}',
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+                fail_silently=True,  # Prevents 500 error if email server drops connection
+            )
+            messages.success(request, f"A new verification code has been sent to {user.email}!")
+        except Exception as e:
+            messages.warning(request, "A new code was generated, but could not be sent to your email inbox.")
+
+    except User.DoesNotExist:
+        messages.error(request, "User record not found.")
+        return redirect('signup')
+
+    return redirect('verify_code')  # Change 'verify_code' to your actual verification route name
 def log_prediction_to_excel(feature_mapping, prediction_result):
     """
     Appends incoming model features and output inferences to a local CSV log matrix.

@@ -12,4 +12,5 @@ urlpatterns = [
     path('analytics/', views.analytics_page, name='analytics'),
     path('pricing/', views.pricing_page, name='pricing'),
     path('api/predict-satisfaction/', views.predict_satisfaction_api, name='api_predict_satisfaction'),
+    path('resend-code/', views.resend_verification_code, name='resend_verification_code'),
 ]

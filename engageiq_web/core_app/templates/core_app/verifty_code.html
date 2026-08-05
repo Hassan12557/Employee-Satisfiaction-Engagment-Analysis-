@@ -1,0 +1,29 @@
+<!-- Display Success/Error Alert Messages -->
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}" role="alert">
+      {{ message }}
+    </div>
+  {% endfor %}
+{% endif %}
+
+<!-- Your Existing Verification Form -->
+<form method="POST" action="">
+  {% csrf_token %}
+  <label for="code">Enter 6-Digit Code:</label>
+  <input type="text" id="code" name="code" required>
+  <button type="submit">Verify Account</button>
+</form>
+
+<hr>
+
+<!-- New Resend Verification Section -->
+<div style="text-align: center; margin-top: 15px;">
+  <p>Didn't receive the email or code expired?</p>
+  <form method="POST" action="{% url 'resend_verification_code' %}">
+    {% csrf_token %}
+    <button type="submit" class="btn-secondary">
+      Resend Verification Code
+    </button>
+  </form>
+</div>
