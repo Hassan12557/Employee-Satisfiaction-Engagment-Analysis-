@@ -85,7 +85,5 @@ Environment Independence: Achieved zero variance between local development and c
 Low-Footprint Design: Handled strict hardware constraints by removing local python compiler overhead and managing caching during build stages.
 
 Stateless Portability: Designed self-healing Django database migration pathways that execute cleanly upon container launch.
-
-here is snapshot of site :
-<img width="1287" height="615" alt="Capture6" src="https://github.com/user-attachments/assets/d3ff47fd-3f04-4c78-b38c-54185bb16614" />
-
+here is snapshot
+ <img width="1344" height="643" alt="1" src="https://github.com/user-attachments/assets/9d8593b2-652a-4423-9d1c-585af117caf6" />
