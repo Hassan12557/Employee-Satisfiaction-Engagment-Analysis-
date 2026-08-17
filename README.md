@@ -3,8 +3,9 @@
 A production-grade, containerized Machine Learning application that leverages a Random Forest Regressor to predict employee satisfaction and identify key drivers of workplace engagement. Built on a full-stack Django framework, fully Dockerized, and optimized to run inside a resource-constrained production cloud environment.
 
 ## 🚀 Live Demo
-Access the live application here: **[engageiqanalytics-yl1isepm.b4a.run][(https://engageiqanalytics-yl1isepm.b4a.run)](https://engageiqanalytics-u3e5sl8m.b4a.run/)**
+Access the live application here: 
 
+https://engageiqanalytics-bmi22uh7.b4a.run/
 ---
 
 ## 🏗️ End-to-End System Architecture
